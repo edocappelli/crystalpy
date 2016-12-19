@@ -6,10 +6,10 @@ import unittest
 
 import numpy
 
-from orangecontrib.crystal.diffraction.DiffractionSetup import DiffractionSetup
-from orangecontrib.crystal.diffraction.GeometryType import BraggDiffraction
-from orangecontrib.crystal.util.Vector import Vector
-from orangecontrib.crystal.util.Photon import Photon
+from crystalpy.diffraction.DiffractionSetup import DiffractionSetup
+from crystalpy.diffraction.GeometryType import BraggDiffraction
+from crystalpy.util.Vector import Vector
+from crystalpy.util.Photon import Photon
 
 
 def diffractionSetup():

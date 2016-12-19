@@ -1,5 +1,5 @@
-from orangecontrib.crystal.polarization.CrystalPhasePlate import CrystalPhasePlate
-from orangecontrib.crystal.polarization.MuellerResult import MuellerResult
+from crystalpy.polarization.CrystalPhasePlate import CrystalPhasePlate
+from crystalpy.polarization.MuellerResult import MuellerResult
 
 
 class MuellerDiffraction(object):
@@ -8,7 +8,7 @@ class MuellerDiffraction(object):
 
         self._diffraction_result = diffraction_result  # DiffractionResult object.
         self._incoming_stokes_vector = incoming_stokes_vector  # StokesVector object.
-        self._inclination_angle = inclination_angle
+        self._inclination_angle = inclination_angle  # radians.
 
     def _intensity_sigma(self, energy, index):
         """
@@ -24,7 +24,7 @@ class MuellerDiffraction(object):
         :param energy: energy for which the phase is calculated.
         :return: intensity of the sigma polarization.
         """
-        return self._diffraction_result.sPhaseByEnergy(energy)[index]
+        return self._diffraction_result.sPhaseByEnergy(energy, deg=False)[index]
 
     def _intensity_pi(self, energy, index):
         """
@@ -40,7 +40,7 @@ class MuellerDiffraction(object):
         :param energy: energy for which the phase is calculated.
         :return: intensity of the pi polarization.
         """
-        return self._diffraction_result.pPhaseByEnergy(energy)[index]
+        return self._diffraction_result.pPhaseByEnergy(energy, deg=False)[index]
 
     def _calculate_stokes_for_energy(self, energy, mueller_result):
         """

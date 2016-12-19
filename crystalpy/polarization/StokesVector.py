@@ -42,6 +42,12 @@ class StokesVector(object):
         """
         return self.s3 / self.s0
 
+    def to_string(self):
+        """
+        :return: a string object containing the four components of the Stokes vector.
+        """
+        return "{S0} {S1} {S2} {S3}".format(S0=self.s0, S1=self.s1, S2=self.s2, S3=self.s3)
+
     def __eq__(self, candidate):
         """
         Determines whether two Stokes vectors are equal.

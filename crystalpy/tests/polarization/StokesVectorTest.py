@@ -5,7 +5,7 @@ import numpy as np
 
 import unittest
 
-from orangecontrib.crystal.polarization.StokesVector import StokesVector
+from crystalpy.polarization.StokesVector import StokesVector
 
 
 def _generate_element_list():

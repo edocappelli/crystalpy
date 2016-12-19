@@ -4,8 +4,8 @@ Unittest for CrystalPhasePlate class.
 
 import unittest
 
-from orangecontrib.crystal.polarization.CrystalPhasePlate import CrystalPhasePlate
-from orangecontrib.crystal.polarization.StokesVector import StokesVector
+from crystalpy.polarization.CrystalPhasePlate import CrystalPhasePlate
+from crystalpy.polarization.StokesVector import StokesVector
 
 import numpy as np
 
@@ -18,7 +18,7 @@ def _generate_phase_plate1():
     phase_sigma = 1.9718541179322164  # radians
     intensity_pi = 0.9685465109320982
     phase_pi = -2.8903921744707217  # radians
-    inclination_angle = 45.0  # degrees
+    inclination_angle = 45.0 * np.pi / 180  # radians
 
     phase_plate = CrystalPhasePlate(incoming_stokes_vector=incoming_stokes_vector,
                                     intensity_sigma=intensity_sigma, phase_sigma=phase_sigma,
@@ -36,7 +36,7 @@ def _generate_phase_plate2():
     phase_sigma = 1.9718541179322164 * 1e-6  # radians
     intensity_pi = 0.9685465109320982 * 1e-6
     phase_pi = -2.8903921744707217 * 1e-6  # radians
-    inclination_angle = 90.0  # degrees
+    inclination_angle = 90.0 * np.pi / 180  # radians
 
     phase_plate = CrystalPhasePlate(incoming_stokes_vector=incoming_stokes_vector,
                                     intensity_sigma=intensity_sigma, phase_sigma=phase_sigma,
@@ -46,6 +46,7 @@ def _generate_phase_plate2():
 
 
 class CrystalPhasePlateTest(unittest.TestCase):
+
     def setUp(self):
         self.phase_plate1 = _generate_phase_plate1()
         self.phase_plate2 = _generate_phase_plate2()
@@ -57,7 +58,7 @@ class CrystalPhasePlateTest(unittest.TestCase):
         self.assertEqual(self.phase_plate1.phase_sigma, 1.9718541179322164)
         self.assertEqual(self.phase_plate1.intensity_pi, 0.9685465109320982)
         self.assertEqual(self.phase_plate1.phase_pi, -2.8903921744707217)
-        self.assertEqual(self.phase_plate1.inclination_angle, 45.0)
+        self.assertAlmostEqual(self.phase_plate1.inclination_angle, 0.785398, places=6)
         # phase plate 2
         np.testing.assert_array_almost_equal(self.phase_plate2.incoming_stokes_vector.get_array(numpy=True),
                                              [-0.9716253979537108 * 1e-6,
@@ -68,7 +69,7 @@ class CrystalPhasePlateTest(unittest.TestCase):
         self.assertEqual(self.phase_plate2.phase_sigma, 1.9718541179322164 * 1e-6)
         self.assertEqual(self.phase_plate2.intensity_pi, 0.9685465109320982 * 1e-6)
         self.assertEqual(self.phase_plate2.phase_pi, -2.8903921744707217 * 1e-6)
-        self.assertEqual(self.phase_plate2.inclination_angle, 90.0)
+        self.assertAlmostEqual(self.phase_plate2.inclination_angle, 1.570796, places=6)
 
     def test_create_matrix(self):
         # phase plate 1

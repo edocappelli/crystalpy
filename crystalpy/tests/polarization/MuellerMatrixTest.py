@@ -5,7 +5,7 @@ import unittest
 
 import numpy as np
 
-from orangecontrib.crystal.polarization.MuellerMatrix import MuellerMatrix
+from crystalpy.polarization.MuellerMatrix import MuellerMatrix
 
 
 def _generate_matrix():

@@ -4,10 +4,10 @@ Except for energy all units are in SI. Energy is in eV. Angles in radians.
 """
 import numpy as np
 
-from orangecontrib.crystal.diffraction.DiffractionSetup import DiffractionSetup
+from crystalpy.diffraction.DiffractionSetup import DiffractionSetup
 
-from orangecontrib.crystal.util.Photon import Photon
-from orangecontrib.crystal.util.Vector import Vector
+from crystalpy.util.Photon import Photon
+from crystalpy.util.Vector import Vector
 
 
 class DiffractionSetupSweeps(DiffractionSetup):

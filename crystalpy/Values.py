@@ -1,8 +1,8 @@
 """
 Allows the user to input the diffraction parameters or to use default values.
 """
-from orangecontrib.crystal.diffraction import GeometryType
-from orangecontrib.crystal.polarization.StokesVector import StokesVector
+from crystalpy.diffraction import GeometryType
+from crystalpy.polarization.StokesVector import StokesVector
 
 
 class Interval(object):

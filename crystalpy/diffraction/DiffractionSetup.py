@@ -7,7 +7,7 @@ from copy import deepcopy
 import numpy as np
 import xraylib
 
-from orangecontrib.crystal.util.Vector import Vector
+from crystalpy.util.Vector import Vector
 
 
 class DiffractionSetup(object):
@@ -51,6 +51,13 @@ class DiffractionSetup(object):
 
         # Load crystal from xraylib.
         self._crystal = xraylib.Crystal_GetCrystal(self.crystalName())
+
+    def incomingPhotons(self):
+        """
+        Returns the incoming photons.
+        :return: A list of photons.
+        """
+        return self._incoming_photons
 
     def geometryType(self):
         """
@@ -113,7 +120,6 @@ class DiffractionSetup(object):
         Returns the minimum energy in eV.
         :return: The minimum energy in eV.
         """
-
         return self.energies().min()
 
     def energyMax(self):

@@ -4,8 +4,9 @@ Unittest for Photon class.
 
 import unittest
 
-from orangecontrib.crystal.util.Photon import Photon
-from orangecontrib.crystal.util.Vector import Vector
+from crystalpy.util.Photon import Photon
+from crystalpy.util.Vector import Vector
+
 
 class PhotonTest(unittest.TestCase):
     def testConstructor(self):
@@ -21,30 +22,29 @@ class PhotonTest(unittest.TestCase):
 
     def testWavelength(self):
         # Test data in eV : m.
-        test_data = {   3 : 413.28 * 10e-9,
-                        4 : 309.96 * 10e-9,
-                        8 : 154.98 * 10e-9,
-                     5000 : 2.4797 * 10e-10,
-                    10000 : 1.2398 * 10e-10}
+        test_data = {   3: 413.28 * 10e-9,
+                        4: 309.96 * 10e-9,
+                        8: 154.98 * 10e-9,
+                     5000: 2.4797 * 10e-10,
+                    10000: 1.2398 * 10e-10}
 
         for energy, wavelength in test_data.items():
             photon = Photon(energy, Vector(0, 0, 1))
             self.assertAlmostEqual(photon.wavelength(),
-                                   wavelength, 2)
+                                   wavelength, places=2)
 
     def testWavenumber(self):
         # Test data in eV : m^-1.
-        test_data = {   3 : 15203192.8,
-                        4 : 20270923.76,
-                        8 : 40541847.5,
-                     5000 : 25338654707.5,
-                    10000 : 50677309415}
-
+        test_data = {   3: 15203192.28,
+                        4: 20270923.03,
+                        8: 40541846.07,
+                     5000: 25338653792.67,
+                    10000: 50677307585.34}
 
         for energy, wavenumber in test_data.items():
             photon = Photon(energy, Vector(0, 0, 1))
             self.assertAlmostEqual(photon.wavenumber(),
-                                   wavenumber, 1)
+                                   wavenumber, places=1)
 
     def testWavevector(self):
         direction = Vector(0, 0, 1)
@@ -53,7 +53,7 @@ class PhotonTest(unittest.TestCase):
         wavevector = photon.wavevector()
 
         self.assertAlmostEqual(wavevector.norm(),
-                               25338654707.5, 1)
+                               25338653792.67, places=1)
 
         self.assertEqual(wavevector.getNormalizedVector(),
                          direction)

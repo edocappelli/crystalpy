@@ -20,5 +20,4 @@ setup(name='crystalpy',
                         'scipy'
                        ],
       # test_suite='tests'
-     )
-
+      )

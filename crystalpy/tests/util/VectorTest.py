@@ -4,7 +4,7 @@ Unittest for Vector class.
 import unittest
 from numpy import pi, arange, array
 
-from orangecontrib.crystal.util.Vector import Vector
+from crystalpy.util.Vector import Vector
 
 
 class VectorTest(unittest.TestCase):
@@ -153,12 +153,14 @@ class VectorTest(unittest.TestCase):
         vector_minus_y = Vector(0, -1, 0)
         vector_minus_z = Vector(0, 0, -1)
 
-
         result = vector_x.rotateAroundAxis(vector_z, pi)
         self.assertTrue(result == vector_minus_x)
 
         result = vector_x.rotateAroundAxis(vector_z, pi / 2.0)
         self.assertTrue(result == vector_y)
+
+        result = vector_x.rotateAroundAxis(vector_minus_z, pi / 2.0)
+        self.assertTrue(result == vector_minus_y)
 
         result = vector_x.addVector(vector_y).rotateAroundAxis(vector_z, pi)
         self.assertTrue(result == vector_minus_x.addVector(vector_minus_y))
@@ -168,6 +170,9 @@ class VectorTest(unittest.TestCase):
 
         result = vector_z.rotateAroundAxis(vector_x, pi / 2.0)
         self.assertTrue(result == vector_minus_y)
+
+        result = vector_z.addVector(vector_x).rotateAroundAxis(vector_y, pi / 2.0)
+        self.assertTrue(result == vector_x.addVector(vector_minus_z))
 
     def testParallelTo(self):
         vector = Vector(1, 1, 3)
@@ -195,7 +200,7 @@ class VectorTest(unittest.TestCase):
                                    0.0)
 
     def testAngle(self):
-        # normalized scalarproduct !!
+        # normalized scalar product !!
         vector_x = Vector(1, 0, 0)
         vector_y = Vector(0, 1, 0)
         vector_z = Vector(0, 0, 1)

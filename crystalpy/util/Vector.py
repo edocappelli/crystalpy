@@ -196,10 +196,10 @@ class Vector(object):
         # Mark's version:
         # By convention always return the smaller angle.
         # while angle > 2.0 * np.pi:
-            # angle -= 2.0 * np.pi
+        #     angle -= 2.0 * np.pi
 
         # if angle > np.pi:
-            # angle = 2.0 * np.pi - angle
+        #     angle = 2.0 * np.pi - angle
 
         return angle
 
@@ -222,3 +222,11 @@ class Vector(object):
         print("Vector: x", self.components()[0])
         print("Vector: y", self.components()[1])
         print("Vector: z", self.components()[2])
+
+    def to_string(self):
+        """
+        :return: a string object containing the four components of the Stokes vector.
+        """
+        return "{Vx} {Vy} {Vz}".format(Vx=self.components()[0],
+                                       Vy=self.components()[1],
+                                       Vz=self.components()[2])

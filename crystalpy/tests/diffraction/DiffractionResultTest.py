@@ -6,11 +6,11 @@ import unittest
 
 import numpy
 
-from orangecontrib.crystal.diffraction.ComplexAmplitude import ComplexAmplitude
-from orangecontrib.crystal.diffraction.DiffractionSetupSweeps import DiffractionSetupSweeps
-from orangecontrib.crystal.diffraction.Diffraction import Diffraction
-from orangecontrib.crystal.diffraction.DiffractionResult import DiffractionResult
-from orangecontrib.crystal.diffraction.GeometryType import BraggDiffraction
+from crystalpy.diffraction.ComplexAmplitude import ComplexAmplitude
+from crystalpy.diffraction.DiffractionSetupSweeps import DiffractionSetupSweeps
+from crystalpy.diffraction.Diffraction import Diffraction
+from crystalpy.diffraction.DiffractionResult import DiffractionResult
+from crystalpy.diffraction.GeometryType import BraggDiffraction
 
 
 def diffractionSetupSingleEnergy():

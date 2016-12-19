@@ -2,7 +2,7 @@
 ---OK---
 """
 from collections import OrderedDict
-from orangecontrib.crystal.Values import Interval
+from crystalpy.Values import Interval
 import copy
 import numpy as np
 

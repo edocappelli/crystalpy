@@ -8,16 +8,19 @@ from math import isnan
 from numpy import pi
 import scipy.constants.codata
 
-from orangecontrib.crystal.diffraction.GeometryType import BraggDiffraction, BraggTransmission, LaueDiffraction, LaueTransmission
-from orangecontrib.crystal.diffraction.DiffractionExceptions import ReflectionImpossibleException, TransmissionImpossibleException, \
+from crystalpy.diffraction.GeometryType import BraggDiffraction, BraggTransmission, LaueDiffraction, LaueTransmission
+from crystalpy.diffraction.DiffractionExceptions import ReflectionImpossibleException, TransmissionImpossibleException, \
                                                                     StructureFactorF0isZeroException, StructureFactorFHisZeroException, \
                                                                     StructureFactorFHbarIsZeroException
-from orangecontrib.crystal.util.Photon import Photon
-from orangecontrib.crystal.diffraction.DiffractionResult import DiffractionResult
-from orangecontrib.crystal.diffraction.PerfectCrystalDiffraction import PerfectCrystalDiffraction
+from crystalpy.util.Photon import Photon
+from crystalpy.util.PhotonBunch import PhotonBunch, PolarizedPhoton
+from crystalpy.diffraction.DiffractionResult import DiffractionResult
+from crystalpy.diffraction.PerfectCrystalDiffraction import PerfectCrystalDiffraction
+from crystalpy.polarization.CrystalPhasePlate import CrystalPhasePlate
 
 
 class Diffraction(object):
+    isDebug = False
     
     def __init__(self):
         """
@@ -161,7 +164,8 @@ class Diffraction(object):
         self._checkSetup(diffraction_setup, angle_bragg, F_0, F_H, F_H_bar)
 
         # Log the structure factors.
-        self.logStructureFactors(F_0, F_H, F_H_bar)
+        if self.isDebug:
+            self.logStructureFactors(F_0, F_H, F_H_bar)
 
         # Retrieve lattice spacing d.
         d_spacing = diffraction_setup.dSpacing() * 1e-10
@@ -224,8 +228,8 @@ class Diffraction(object):
             # Calculate diffraction for current incoming photon.
             result_deviation = perfect_crystal.calculateDiffraction(photon_in)
 
-            # Calculate polarization difference between sigma and pi polarization.
-            polarization_difference = result_deviation["S"] / result_deviation["P"]
+            # Calculate polarization difference between pi and sigma polarization.
+            polarization_difference = result_deviation["P"] / result_deviation["S"]
 
             # Add result of current deviation.
             result.add(energy,
@@ -254,3 +258,134 @@ class Diffraction(object):
 
         # Return diffraction results.
         return result
+
+##################################################################################################
+# FUNCTIONS ADAPTED TO WORK WITH GENERAL BUNCHES OF PHOTONS AND NOT WITH DIRECTION/ENERGY SWEEPS #
+##################################################################################################
+
+    def _perfectCrystalForPhoton(self, diffraction_setup, polarized_photon):
+
+        energy = polarized_photon.energy()
+
+        # Retrieve bragg angle.
+        angle_bragg = diffraction_setup.angleBragg(energy)
+
+        # Get structure factors for all relevant lattice vectors 0,H,H_bar.
+        F_0 = diffraction_setup.F0(energy)
+        F_H = diffraction_setup.FH(energy)
+        F_H_bar = diffraction_setup.FH_bar(energy)
+
+        # Check if given Bragg/Laue geometry and given miller indices are possible.
+        self._checkSetup(diffraction_setup, angle_bragg, F_0, F_H, F_H_bar)
+
+        # Log the structure factors.
+        if self.isDebug:
+            self.logStructureFactors(F_0, F_H, F_H_bar)
+
+        # Retrieve lattice spacing d.
+        d_spacing = diffraction_setup.dSpacing() * 1e-10
+
+        # Calculate the Bragg normal B_H.
+        normal_bragg = diffraction_setup.normalBragg()
+
+        # Calculate the surface normal n.
+        normal_surface = diffraction_setup.normalSurface()
+
+        # Retrieve unitcell volume from xraylib.
+        unitcell_volume = diffraction_setup.unitcellVolume() * 10 ** -30
+
+        # Calculate psis as defined in Zachariasen [3-95]
+        psi_0 = self._calculatePsiFromStructureFactor(unitcell_volume, polarized_photon, F_0)
+        psi_H = self._calculatePsiFromStructureFactor(unitcell_volume, polarized_photon, F_H)
+        psi_H_bar = self._calculatePsiFromStructureFactor(unitcell_volume, polarized_photon, F_H_bar)
+
+        # Create PerfectCrystalDiffraction instance.
+        perfect_crystal = PerfectCrystalDiffraction(geometry_type=diffraction_setup.geometryType(),
+                                                    bragg_normal=normal_bragg,
+                                                    surface_normal=normal_surface,
+                                                    bragg_angle=angle_bragg,
+                                                    psi_0=psi_0,
+                                                    psi_H=psi_H,
+                                                    psi_H_bar=psi_H_bar,
+                                                    thickness=diffraction_setup.thickness(),
+                                                    d_spacing=d_spacing)
+
+        return perfect_crystal
+
+    def _calculateDiffractionForPhoton(self, diffraction_setup, incoming_polarized_photon, inclination_angle, outgoing_bunch):
+        """
+        Calculates the diffraction/transmission given by the setup.
+        :param diffraction_setup: The diffraction setup.
+        :return: PhotonBunch object made up of diffracted/transmitted photons.
+        """
+        # Retrieve the incoming Stokes vector.
+        incoming_stokes_vector = incoming_polarized_photon.stokesVector()
+
+        # Get PerfectCrystal instance for the current photon.
+        perfect_crystal = self._perfectCrystalForPhoton(diffraction_setup, incoming_polarized_photon)
+
+        # Calculate diffraction for current incoming photon.
+        complex_amplitudes = perfect_crystal.calculateDiffraction(incoming_polarized_photon)
+
+        # Calculate outgoing Photon.
+        outgoing_photon = perfect_crystal._calculatePhotonOut(incoming_polarized_photon)
+
+        # Calculate intensities and phases.
+        intensity_pi = complex_amplitudes["P"].intensity()
+        intensity_sigma = complex_amplitudes["S"].intensity()
+        phase_pi = complex_amplitudes["P"].phase()
+        phase_sigma = complex_amplitudes["S"].phase()
+
+        # Get a CrystalPhasePlate instance.
+        phase_plate = CrystalPhasePlate(incoming_stokes_vector=incoming_stokes_vector,
+                                        intensity_sigma=intensity_sigma,
+                                        phase_sigma=phase_sigma,
+                                        intensity_pi=intensity_pi,
+                                        phase_pi=phase_pi,
+                                        inclination_angle=inclination_angle)
+
+        # Use intensities and phases to calculate the Stokes vector for the outgoing photon.
+        outgoing_stokes_vector = phase_plate.calculate_stokes_vector()
+
+        # Piece together the PolarizedPhoton object.
+        outgoing_polarized_photon = PolarizedPhoton(energy_in_ev=outgoing_photon.energy(),
+                                                    direction_vector=outgoing_photon.unitDirectionVector(),
+                                                    stokes_vector=outgoing_stokes_vector)
+
+        # Add result of current deviation.
+        outgoing_bunch.add(outgoing_polarized_photon)
+
+        # Return diffraction results.
+        return outgoing_bunch
+
+    def calculateDiffractedPhotonBunch(self, diffraction_setup, inclination_angle):
+        """
+        Calculates the diffraction/transmission given by the setup.
+        :param diffraction_setup: The diffraction setup.
+        :return: PhotonBunch object made up of diffracted/transmitted photons.
+        """
+        # Create PhotonBunch instance.
+        outgoing_bunch = PhotonBunch([])
+
+        # Retrieve the photon bunch from the diffraction setup.
+        incoming_bunch = diffraction_setup.incomingPhotons()
+
+        # Check that photon_bunch is indeed a PhotonBunch object.
+        if not isinstance(incoming_bunch, PhotonBunch):
+            raise Exception("the incomingPhoton method in the setup is not yielding a PhotonBunch object!")
+
+        # Raise calculation start.
+        self._onCalculationStart()
+
+        for index, polarized_photon in enumerate(incoming_bunch):
+
+            # Raise OnProgress event if progressed by 10 percent.
+            self._onProgressEveryTenPercent(index, len(incoming_bunch))
+
+            self._calculateDiffractionForPhoton(diffraction_setup, polarized_photon, inclination_angle, outgoing_bunch)
+
+        # Raise calculation end.
+        self._onCalculationEnd()
+
+        # Return diffraction results.
+        return outgoing_bunch

@@ -6,10 +6,10 @@ import unittest
 
 from numpy import pi
 
-from orangecontrib.crystal.diffraction.PerfectCrystalDiffraction import PerfectCrystalDiffraction
-from orangecontrib.crystal.util.Vector import Vector
-from orangecontrib.crystal.util.Photon import Photon
-from orangecontrib.crystal.diffraction.GeometryType import BraggDiffraction, LaueDiffraction, BraggTransmission, LaueTransmission
+from crystalpy.diffraction.PerfectCrystalDiffraction import PerfectCrystalDiffraction
+from crystalpy.util.Vector import Vector
+from crystalpy.util.Photon import Photon
+from crystalpy.diffraction.GeometryType import BraggDiffraction, LaueDiffraction, BraggTransmission, LaueTransmission
 
 
 def generatePerfectCrystalDiffraction():

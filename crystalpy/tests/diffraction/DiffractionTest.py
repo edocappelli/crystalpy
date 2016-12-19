@@ -7,13 +7,13 @@ import unittest
 import numpy as np
 import xraylib
 
-from orangecontrib.crystal.diffraction.Diffraction import Diffraction
-from orangecontrib.crystal.diffraction.DiffractionSetupSweeps import DiffractionSetupSweeps
-from orangecontrib.crystal.diffraction.GeometryType import GeometryType
-from orangecontrib.crystal.util.Vector import Vector
-from orangecontrib.crystal.util.Photon import Photon
-from orangecontrib.crystal.diffraction.GeometryType import BraggDiffraction, LaueDiffraction, BraggTransmission, LaueTransmission
-from orangecontrib.crystal.diffraction.DiffractionExceptions import ReflectionImpossibleException, TransmissionImpossibleException, \
+from crystalpy.diffraction.Diffraction import Diffraction
+from crystalpy.diffraction.DiffractionSetupSweeps import DiffractionSetupSweeps
+from crystalpy.diffraction.GeometryType import GeometryType
+from crystalpy.util.Vector import Vector
+from crystalpy.util.Photon import Photon
+from crystalpy.diffraction.GeometryType import BraggDiffraction, LaueDiffraction, BraggTransmission, LaueTransmission
+from crystalpy.diffraction.DiffractionExceptions import ReflectionImpossibleException, TransmissionImpossibleException, \
                                                                     StructureFactorF0isZeroException, StructureFactorFHisZeroException, \
                                                                     StructureFactorFHbarIsZeroException
 

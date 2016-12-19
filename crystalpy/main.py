@@ -1,10 +1,10 @@
 import numpy as np
 import matplotlib.pyplot as plt
-from orangecontrib.crystal.diffraction.DiffractionSetupSweeps import DiffractionSetupSweeps
-from orangecontrib.crystal.diffraction.Diffraction import Diffraction
-from orangecontrib.crystal.Values import Values
-from orangecontrib.crystal.PlotData1D import PlotData1D
-from orangecontrib.crystal.polarization.MuellerDiffraction import MuellerDiffraction
+from crystalpy.diffraction.DiffractionSetupSweeps import DiffractionSetupSweeps
+from crystalpy.diffraction.Diffraction import Diffraction
+from crystalpy.Values import Values
+from crystalpy.PlotData1D import PlotData1D
+from crystalpy.polarization.MuellerDiffraction import MuellerDiffraction
 
 
 def intensity_phase_plot(plot_1d, values):

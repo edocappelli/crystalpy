@@ -1,5 +1,5 @@
-from orangecontrib.crystal.polarization.StokesVector import StokesVector
-from orangecontrib.crystal.polarization.MuellerMatrix import MuellerMatrix
+from crystalpy.polarization.StokesVector import StokesVector
+from crystalpy.polarization.MuellerMatrix import MuellerMatrix
 import numpy as np
 
 
@@ -11,17 +11,12 @@ class CrystalPhasePlate(MuellerMatrix):
                  inclination_angle=0.0):
         """
         Constructor.
-        :param intensity_sigma:
-        :param phase_sigma:
-        :param intensity_pi:
-        :param phase_pi:
-        :param inclination_angle:
         """
         self.intensity_sigma = intensity_sigma
         self.phase_sigma = phase_sigma
         self.intensity_pi = intensity_pi
         self.phase_pi = phase_pi
-        self.inclination_angle = inclination_angle  # degrees.
+        self.inclination_angle = inclination_angle  # radians.
         self.incoming_stokes_vector = incoming_stokes_vector  # StokesVector object.
 
         phase_plate_matrix = self._create_matrix()
@@ -32,7 +27,7 @@ class CrystalPhasePlate(MuellerMatrix):
         TODO: put article with the notation
         :return: Mueller matrix for a phase plate (numpy.ndarray).
         """
-        alpha = self.inclination_angle * np.pi / 180  # degrees -> radians.
+        alpha = self.inclination_angle  # radians.
 
         # Create the Mueller matrix for a phase plate as a numpy array.
         phase_plate_matrix = np.zeros([4, 4])

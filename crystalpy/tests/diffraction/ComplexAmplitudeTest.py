@@ -6,7 +6,7 @@ import unittest
 
 import numpy as np
 
-from orangecontrib.crystal.diffraction.ComplexAmplitude import ComplexAmplitude
+from crystalpy.diffraction.ComplexAmplitude import ComplexAmplitude
 
 
 class ComplexAmplitudeTest(unittest.TestCase):

@@ -6,9 +6,9 @@ Except for energy all units are in SI. Energy is in eV.
 
 from numpy import pi, cos, sqrt
 
-from orangecontrib.crystal.diffraction.ComplexAmplitude import ComplexAmplitude
-from orangecontrib.crystal.util.Photon import Photon
-from orangecontrib.crystal.diffraction.GeometryType import BraggDiffraction, LaueDiffraction, BraggTransmission, LaueTransmission
+from crystalpy.diffraction.ComplexAmplitude import ComplexAmplitude
+from crystalpy.util.Photon import Photon
+from crystalpy.diffraction.GeometryType import BraggDiffraction, LaueDiffraction, BraggTransmission, LaueTransmission
 
 # Use mpmath if possible. Otherwise use native cmath.
 try:
@@ -18,6 +18,8 @@ try:
 except ImportError:
     import cmath
     use_mpmath = False
+    print("mpmath module for arbitrary-precision floating-point arithmetic could not be found!\n "
+          "Use cmath instead. This could lead to overflow errors.\n")
 
 
 class CalculationStrategy(object):
@@ -252,13 +254,13 @@ class PerfectCrystalDiffraction(object):
         photon_out = Photon(photon_in.energy(), k_out)
 
         if self.isDebug:
-            self.logDebug("surface normal"+str(self.surface_normal().components()))
+            self.logDebug("surface normal" + str(self.surface_normal().components()))
             self.logDebug("Angle bragg normal photon_in"
-                          + str((photon_in.unitDirectionVector().angles(self.braggNormal()),
-                                pi * 0.5 - photon_in.unitDirectionVector().angles(self.braggNormal()))))
+                          + str((photon_in.unitDirectionVector().angle(self.braggNormal()),
+                                pi * 0.5 - photon_in.unitDirectionVector().angle(self.braggNormal()))))
             self.logDebug("Angle bragg normal photon_out"
-                          + str((photon_out.unitDirectionVector().angles(self.braggNormal()),
-                                pi * 0.5 - photon_out.unitDirectionVector().angles(self.braggNormal()))))
+                          + str((photon_out.unitDirectionVector().angle(self.braggNormal()),
+                                pi * 0.5 - photon_out.unitDirectionVector().angle(self.braggNormal()))))
             self.logDebug("photon_in direction" + str(photon_in.unitDirectionVector().components()))
             self.logDebug("photon_out direction" + str(photon_out.unitDirectionVector().components()))
 

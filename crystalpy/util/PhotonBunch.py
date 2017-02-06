@@ -4,6 +4,7 @@ This object is used as input to and output from the passive crystal widget.
 """
 from crystalpy.util.Vector import Vector
 from crystalpy.util.Photon import Photon
+from crystalpy.polarization.StokesVector import StokesVector
 import numpy as np
 from math import atan2
 
@@ -18,9 +19,9 @@ class PolarizedPhoton(Photon):
         :param energy_in_ev: photon energy in electron volts.
         :type energy_in_ev: float
         :param direction_vector: it doesn't have to be a unit vector, it gets normalized in Photon.__init__.
-        :type energy_in_ev: crystalpy.util.Vector
+        :type direction_vector: crystalpy.util.Vector
         :param stokes_vector: Stokes vector describing the polarization state.
-        :type stokes_vector: crystalpy.polarization.StokesVector
+        :type stokes_vector: StokesVector
         """
         # self._energy_in_ev holds the energy in the base class.
         # self._unit_direction_vector holds the vector in the base class.
@@ -49,6 +50,12 @@ class PolarizedPhoton(Photon):
         :return: Stokes vector.
         """
         return self._stokes_vector
+
+    def polarizationDegree(self):
+        """
+        :return: degree of circular polarization.
+        """
+        return self._stokes_vector.polarization_degree()
 
     def __eq__(self, candidate):
         """
@@ -87,13 +94,16 @@ class PhotonBunch(object):
     def add(self, to_be_added):
         """
         :param to_be_added: PolarizedPhoton object(s) to be added to the bunch.
-        :type to_be_added: PolarizedPhoton or list(PolarizedPhoton)
+        :type to_be_added: PolarizedPhoton or list(PolarizedPhoton) of PhotonBunch
         """
         if type(to_be_added) == PolarizedPhoton:
             self.photon_bunch.append(to_be_added)
 
         elif type(to_be_added) == list:
             self.photon_bunch.extend(to_be_added)
+
+        elif type(to_be_added) == PhotonBunch:
+            self.photon_bunch.extend(to_be_added.photon_bunch)
 
         else:
             raise TypeError("The photon(s) could not be added to the bunch!")
@@ -117,7 +127,9 @@ class PhotonBunch(object):
         energies = np.zeros(len(self))
         deviations = np.zeros(len(self))
         stokes = np.zeros([4, len(self)])
+        polarization_degrees = np.zeros(len(self))
         i = 0
+
         for polarized_photon in self:
             energies[i] = polarized_photon.energy()  # Photon.energy()
             deviations[i] = polarized_photon.deviation()
@@ -125,6 +137,7 @@ class PhotonBunch(object):
             stokes[1, i] = polarized_photon.stokesVector().s1
             stokes[2, i] = polarized_photon.stokesVector().s2
             stokes[3, i] = polarized_photon.stokesVector().s3
+            polarization_degrees[i] = polarized_photon.polarizationDegree()
             i += 1
 
         self.array_dict["number of photons"] = i
@@ -134,6 +147,7 @@ class PhotonBunch(object):
         self.array_dict["s1"] = stokes[1, :]
         self.array_dict["s2"] = stokes[2, :]
         self.array_dict["s3"] = stokes[3, :]
+        self.array_dict["polarization degree"] = polarization_degrees
 
     def get_array(self, key):
         """
@@ -176,7 +190,8 @@ class PhotonBunch(object):
         bunch_string = str()
         for polarized_photon in self:
             string_to_attach = str(polarized_photon.energy()) + " " + \
-                                   polarized_photon.unitDirectionVector().to_string() + " " + \
-                                   polarized_photon.stokesVector().to_string() + "\n"
+                               polarized_photon.unitDirectionVector().to_string() + " " + \
+                               polarized_photon.stokesVector().to_string() + " " + \
+                               str(polarized_photon.polarizationDegree()) + "\n"
             bunch_string += string_to_attach
         return bunch_string

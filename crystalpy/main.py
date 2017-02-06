@@ -195,19 +195,19 @@ def plot_diffraction_1d(result, deg):
         s_phase = ("Phase - Polarization S",
                    "Angle deviation in urad",
                    phase_string,
-                   result.sPhaseByEnergy(energy))
+                   result.sPhaseByEnergy(energy, deg))
         plots.append(addPlotInfo(info_dict, energy, angles_in_um, s_phase))
 
         p_phase = ("Phase - Polarization P",
                    "Angle deviation in urad",
                    phase_string,
-                   result.pPhaseByEnergy(energy))
+                   result.pPhaseByEnergy(energy, deg))
         plots.append(addPlotInfo(info_dict, energy, angles_in_um, p_phase))
 
         phase_difference = ("Phase difference",
                             "Angle deviation in urad",
                             phase_string,
-                            result.differencePhaseByEnergy(energy))
+                            result.differencePhaseByEnergy(energy, deg))
         plots.append(addPlotInfo(info_dict, energy, angles_in_um, phase_difference))
 
     return plots

@@ -244,13 +244,46 @@ class PerfectCrystalDiffraction(object):
         :param photon_in: Incoming photon.
         :return: Outgoing photon.
         """
+        # # Retrieve k_0.
+        # k_in = photon_in.wavevector()
+
+        # # Solve unscaled Laue equation.
+        # k_out = self.braggNormal().addVector(k_in)
+
+        # Create photon in k_out direction and scale by setting the photon energy.
+        # photon_out = Photon(photon_in.energy(), k_out)
+        """
+        GENERAL VERSION:
+        Solves the Laue equation for the parallel components of the vectors and
+        uses the conservation of the wavevector modulus to calculate the outgoing wavevector
+        even for diffraction not at the Bragg angle.
+        """
         # Retrieve k_0.
         k_in = photon_in.wavevector()
 
-        # Solve unscaled Laue equation.
-        k_out = self.braggNormal().addVector(k_in)
+        # Decompose the vector into a component parallel to the surface normal and
+        # a component parallel to the surface: (k_in * n) n.
+        k_in_normal = self.surface_normal().scalarMultiplication(k_in.scalarProduct(self.surface_normal()))
+        k_in_parallel = k_in.subtractVector(k_in_normal)
 
-        # Create photon in k_out direction and scale by setting the photon energy.
+        # Retrieve the B_H vector.
+        B_H = self.braggNormal()
+
+        # Decompose the vector into a component parallel to the surface normal and
+        # a component parallel to the surface: (B_H * n) n.
+        B_H_normal = self.surface_normal().scalarMultiplication(B_H.scalarProduct(self.surface_normal()))
+        B_H_parallel = B_H.subtractVector(B_H_normal)
+
+        # Apply the Laue formula for the parallel components.
+        k_out_parallel = k_in_parallel.addVector(B_H_parallel)
+
+        # Calculate K_out normal.
+        k_out_normal_modulus = sqrt(k_in.norm() ** 2 - k_out_parallel.norm() ** 2)
+        k_out_normal = self.surface_normal().scalarMultiplication(k_out_normal_modulus)
+
+        # Calculate the outgoing photon.
+        k_out = k_out_parallel.addVector(k_out_normal)
+
         photon_out = Photon(photon_in.energy(), k_out)
 
         if self.isDebug:

@@ -1,5 +1,20 @@
 """
 Represents diffraction results.
+
+    self._intensities = numpy.array((number_energies,number_angles,index_polarization))
+
+
+    self._phases = numpy.array((number_energies,number_angles,index_polarization))
+
+    index_polarization:
+        INDEX_POLARIZATION_S = 0
+        INDEX_POLARIZATION_P = 1
+        INDEX_DIFFERENCE_PS = 2
+
+        Note that INDEX_DIFFERENCE_PS=2 means for:
+            self._intensities: the RATIO of p-intensity / s-intensity
+            self._phases: the DIFFERENCE of p-intensity - s-intensity
+
 """
 import numpy
 

@@ -12,40 +12,40 @@ class CrystalPhasePlate(MuellerMatrix):
         """
         Constructor.
         """
-        self.intensity_sigma = intensity_sigma
-        self.phase_sigma = phase_sigma
-        self.intensity_pi = intensity_pi
-        self.phase_pi = phase_pi
-        self.inclination_angle = inclination_angle  # radians.
+
         self.incoming_stokes_vector = incoming_stokes_vector  # StokesVector object.
 
-        phase_plate_matrix = self._create_matrix()
+        phase_plate_matrix = self._create_matrix(intensity_sigma, phase_sigma,
+                 intensity_pi, phase_pi,
+                 inclination_angle)
         super(CrystalPhasePlate, self).__init__(phase_plate_matrix)
 
-    def _create_matrix(self):
+    def _create_matrix(self,intensity_sigma, phase_sigma,
+                 intensity_pi, phase_pi,
+                 inclination_angle=0.0):
         """
         TODO: put article with the notation
         :return: Mueller matrix for a phase plate (numpy.ndarray).
         """
-        alpha = self.inclination_angle  # radians.
+        alpha = inclination_angle  # radians.
 
         # Create the Mueller matrix for a phase plate as a numpy array.
         phase_plate_matrix = np.zeros([4, 4])
 
         # First row.
-        phase_plate_matrix[0, 0] = 0.5 * (self.intensity_sigma + self.intensity_pi)
-        phase_plate_matrix[0, 1] = 0.5 * (self.intensity_sigma - self.intensity_pi) * np.cos(2 * alpha)
-        phase_plate_matrix[0, 2] = 0.5 * (self.intensity_sigma - self.intensity_pi) * np.sin(2 * alpha)
+        phase_plate_matrix[0, 0] = 0.5 * (intensity_sigma + intensity_pi)
+        phase_plate_matrix[0, 1] = 0.5 * (intensity_sigma - intensity_pi) * np.cos(2 * alpha)
+        phase_plate_matrix[0, 2] = 0.5 * (intensity_sigma - intensity_pi) * np.sin(2 * alpha)
         phase_plate_matrix[0, 3] = 0.0
 
         # Second row.
-        phase_plate_matrix[1, 0] = 0.5 * (self.intensity_sigma - self.intensity_pi)
-        phase_plate_matrix[1, 1] = 0.5 * (self.intensity_sigma + self.intensity_pi) * np.cos(2 * alpha)
-        phase_plate_matrix[1, 2] = 0.5 * (self.intensity_sigma + self.intensity_pi) * np.sin(2 * alpha)
+        phase_plate_matrix[1, 0] = 0.5 * (intensity_sigma - intensity_pi)
+        phase_plate_matrix[1, 1] = 0.5 * (intensity_sigma + intensity_pi) * np.cos(2 * alpha)
+        phase_plate_matrix[1, 2] = 0.5 * (intensity_sigma + intensity_pi) * np.sin(2 * alpha)
         phase_plate_matrix[1, 3] = 0.0
 
-        scalar = np.sqrt(self.intensity_sigma) * np.sqrt(self.intensity_pi)
-        delta_phase = self.phase_pi - self.phase_sigma
+        scalar = np.sqrt(intensity_sigma) * np.sqrt(intensity_pi)
+        delta_phase = phase_pi - phase_sigma
 
         # Third row.
         phase_plate_matrix[2, 0] = 0.0

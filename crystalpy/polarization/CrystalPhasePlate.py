@@ -1,11 +1,11 @@
-from crystalpy.polarization.StokesVector import StokesVector
+# from crystalpy.polarization.StokesVector import StokesVector
 from crystalpy.polarization.MuellerMatrix import MuellerMatrix
 import numpy as np
 
 
 class CrystalPhasePlate(MuellerMatrix):
 
-    def __init__(self, incoming_stokes_vector,
+    def __init__(self, # incoming_stokes_vector,
                  intensity_sigma, phase_sigma,
                  intensity_pi, phase_pi,
                  inclination_angle=0.0):
@@ -13,7 +13,7 @@ class CrystalPhasePlate(MuellerMatrix):
         Constructor.
         """
 
-        self.incoming_stokes_vector = incoming_stokes_vector  # StokesVector object.
+        # self.incoming_stokes_vector = incoming_stokes_vector  # StokesVector object.
 
         phase_plate_matrix = self._create_matrix(intensity_sigma, phase_sigma,
                  intensity_pi, phase_pi,
@@ -61,14 +61,14 @@ class CrystalPhasePlate(MuellerMatrix):
 
         return phase_plate_matrix
 
-    def calculate_stokes_vector(self):
-        """
-        Takes an incoming Stokes vector, multiplies it by a Mueller matrix
-        and gives an outgoing Stokes vector as a result.
-        :return: StokesVector object.
-        """
-        incoming_stokes_vector = self.incoming_stokes_vector.get_array()  # Stokes vector.
-        element_list = self.matrix_by_vector(incoming_stokes_vector, numpy=False)
-        outgoing_stokes_vector = StokesVector(element_list)
-
-        return outgoing_stokes_vector
+    # def calculate_stokes_vector(self,incoming_stokes_vector):
+    #     """
+    #     Takes an incoming Stokes vector, multiplies it by a Mueller matrix
+    #     and gives an outgoing Stokes vector as a result.
+    #     :return: StokesVector object.
+    #     """
+    #     # incoming_stokes_vector = self.incoming_stokes_vector.get_array()  # Stokes vector.
+    #     element_list = self.matrix_by_vector(incoming_stokes_vector.get_array(), numpy=False)
+    #     outgoing_stokes_vector = StokesVector(element_list)
+    #
+    #     return outgoing_stokes_vector

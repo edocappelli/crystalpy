@@ -54,12 +54,12 @@ class MuellerDiffraction(object):
             intensity_pi = self._intensity_pi(energy, index)
             phase_pi = self._phase_pi(energy, index)
 
-            crystal_phase_plate = CrystalPhasePlate(self._incoming_stokes_vector,
+            crystal_phase_plate = CrystalPhasePlate( # self._incoming_stokes_vector,
                                                     intensity_sigma, phase_sigma,
                                                     intensity_pi, phase_pi,
                                                     self._inclination_angle)
 
-            mueller_result.add(energy, deviation, crystal_phase_plate.calculate_stokes_vector())
+            mueller_result.add(energy, deviation, crystal_phase_plate.calculate_stokes_vector(self._incoming_stokes_vector))
 
     def calculate_stokes(self):
         """

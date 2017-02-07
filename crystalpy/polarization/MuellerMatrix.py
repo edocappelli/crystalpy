@@ -3,7 +3,7 @@ Represents a Mueller matrix.
 Except for energy all units are in SI. Energy is in eV.
 """
 import numpy as np
-
+from crystalpy.polarization.StokesVector import StokesVector
 
 class MuellerMatrix(object):
 
@@ -108,3 +108,15 @@ class MuellerMatrix(object):
         :return: True if not equal. False if equal.
         """
         return not self == candidate
+
+    def calculate_stokes_vector(self,incoming_stokes_vector):
+        """
+        Takes an incoming Stokes vector, multiplies it by a Mueller matrix
+        and gives an outgoing Stokes vector as a result.
+        :return: StokesVector object.
+        """
+        # incoming_stokes_vector = self.incoming_stokes_vector.get_array()  # Stokes vector.
+        element_list = self.matrix_by_vector(incoming_stokes_vector.get_array(), numpy=False)
+        outgoing_stokes_vector = StokesVector(element_list)
+
+        return outgoing_stokes_vector

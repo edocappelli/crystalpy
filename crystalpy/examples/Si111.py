@@ -276,6 +276,78 @@ def plot_stokes_1d(result):
 
     return plots
 
+# def four_plots(x1,y1,x2,y2,x3,y3,x4,y4,title="",xtitle="",ytitle="",xrange=None,yrange=None,show=True):
+#     """
+#     Creates four plots in a window
+#
+#     :param x1: abscissas for plot 1
+#     :param y1: ordinates for plot 1
+#     :param x2: abscissas for plot 2
+#     :param y2: ordinates for plot 2
+#     :param x3: abscissas for plot 3
+#     :param y3: ordinates for plot 3
+#     :param x4: abscissas for plot 4
+#     :param y4: ordinates for plot 4
+#     :param title: a string or list of 4 strings with title
+#     :param xtitle: a string or list of 4 strings with title for X
+#     :param ytitle: a string or list of 4 strings with title for Y
+#     :param xrange: the X range for all plots
+#     :param yrange: the Y range for all plots
+#     :param show:
+#     :return:
+#     """
+#
+#     if isinstance(title,list):
+#         Title = title
+#     else:
+#         Title = [title,title,title,title]
+#
+#     if isinstance(xtitle,list):
+#         Xtitle = xtitle
+#     else:
+#         Xtitle = [xtitle,xtitle,xtitle,xtitle]
+#
+#     if isinstance(ytitle,list):
+#         Ytitle = ytitle
+#     else:
+#         Ytitle = [ytitle,ytitle,ytitle,ytitle]
+#
+#     # Create subplots.
+#     f, ((ax00, ax01), (ax10, ax11)) = plt.subplots(2, 2, sharex="all", sharey="all")
+#
+#     ax00.plot(x1,y1, "-")
+#     ax00.set_title(  Title[0])
+#     ax00.set_xlabel(Xtitle[0])
+#     ax00.set_ylabel(Ytitle[0])
+#     ax00.set_xlim(xrange)
+#     ax00.set_ylim(yrange)
+#
+#
+#     ax01.plot(x2,y2, "-")
+#     ax01.set_title(  Title[1])
+#     ax01.set_xlabel(Xtitle[1])
+#     ax01.set_ylabel(Ytitle[1])
+#     ax01.set_xlim(xrange)
+#     ax01.set_ylim(yrange)
+#
+#
+#     ax10.plot(x3,y3, "-")
+#     ax10.set_title(  Title[2])
+#     ax10.set_xlabel(Xtitle[2])
+#     ax10.set_ylabel(Ytitle[2])
+#     ax10.set_xlim(xrange)
+#     ax10.set_ylim(yrange)
+#
+#
+#     ax11.plot(x4,y4, "-")
+#     ax11.set_title(  Title[3])
+#     ax11.set_xlabel(Xtitle[3])
+#     ax11.set_ylabel(Ytitle[3])
+#     ax11.set_xlim(xrange)
+#     ax11.set_ylim(yrange)
+#
+#     if show: plt.show()
+
 if __name__ == "__main__":
 
     # Get values from user or use default values.
@@ -319,7 +391,7 @@ if __name__ == "__main__":
     print("_intensity shape: ",diffraction_result._intensities.shape)
     print("_phases shape: ",diffraction_result._phases.shape)
 
-    from srxraylib.plot.gol import plot
+    from srxraylib.plot.gol import plot, four_plots
     # plot( 1e6*deviation_angles,diffraction_result._intensities[0,:,0],
     #       1e6*deviation_angles,diffraction_result._intensities[0,:,1],
     #       1e6*deviation_angles,diffraction_result._intensities[0,:,2],
@@ -338,7 +410,7 @@ if __name__ == "__main__":
     # Create a PlotData1D object.
     print("\nCreating the diffraction profile plots...")
 
-    values = Values()
+    # values = Values()
     # plot_1d = plot_diffraction_1d(diffraction_result, values.deg)
 
     # if False:
@@ -357,10 +429,6 @@ if __name__ == "__main__":
     # hirano_plot(plot_1d, values)
 
 
-
-
-    print("Inclination",values.inclination_angle)
-
     # Create a MuellerDiffraction object.
     mueller_diffraction = MuellerDiffraction(diffraction_result,
                                              StokesVector([1,1,0,1]),
@@ -370,12 +438,19 @@ if __name__ == "__main__":
     print("\nCalculating the Stokes vector...")
     mueller_result = mueller_diffraction.calculate_stokes()
 
-    # Create a PlotData1D object.
-    print("\nCreating the Stokes parameters plots...")
-    plot_1d = plot_stokes_1d(mueller_result)
+    # # Create a PlotData1D object.
+    # print("\nCreating the Stokes parameters plots...")
+    # plot_1d = plot_stokes_1d(mueller_result)
 
     # Plot the Stokes vectors.
-    stokes_plot(plot_1d, values)
+    # stokes_plot(plot_1d, values)
+
+    four_plots(1e6*deviation_angles,mueller_result._s0[0],
+               1e6*deviation_angles,mueller_result._s1[0],
+               1e6*deviation_angles,mueller_result._s2[0],
+               1e6*deviation_angles,mueller_result._s3[0],
+               title=["S0","S1","S2","S3"],xtitle="Deviation angle [urad]",
+               yrange=[-1,1])
 
     # Plot the degree of circular polarization.
     # polarization_degree_plot(plot_1d, values)

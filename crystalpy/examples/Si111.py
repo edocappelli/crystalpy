@@ -10,6 +10,11 @@ from crystalpy.polarization.MuellerDiffraction import MuellerDiffraction
 import matplotlib.pyplot as plt
 from crystalpy.Values import Values
 
+
+from crystalpy.polarization.StokesVector import StokesVector
+
+
+
 def intensity_phase_plot(plot_1d, values):
     """
     Plot the diffraction results.
@@ -315,26 +320,26 @@ if __name__ == "__main__":
     print("_phases shape: ",diffraction_result._phases.shape)
 
     from srxraylib.plot.gol import plot
-    plot( 1e6*deviation_angles,diffraction_result._intensities[0,:,0],
-          1e6*deviation_angles,diffraction_result._intensities[0,:,1],
-          1e6*deviation_angles,diffraction_result._intensities[0,:,2],
-          title="Intensity for photon energy = %4.3f "%photon_energies[0],
-          xtitle="Deviation angle urad",ytitle="Reflectivity",
-          legend=['s-pol','p-pol','p/s ratio',],show=False)
-
-    plot( 1e6*deviation_angles,diffraction_result._phases[0,:,0],
-          1e6*deviation_angles,diffraction_result._phases[0,:,1],
-          1e6*deviation_angles,diffraction_result._phases[0,:,2],
-          title="Phase for photon energy = %4.3f "%photon_energies[0],
-          xtitle="Deviation angle urad",ytitle="Reflectivity",
-          legend=['s-pol','p-pol','p minus s pol'],show=False)
+    # plot( 1e6*deviation_angles,diffraction_result._intensities[0,:,0],
+    #       1e6*deviation_angles,diffraction_result._intensities[0,:,1],
+    #       1e6*deviation_angles,diffraction_result._intensities[0,:,2],
+    #       title="Intensity for photon energy = %4.3f "%photon_energies[0],
+    #       xtitle="Deviation angle urad",ytitle="Reflectivity",
+    #       legend=['s-pol','p-pol','p/s ratio',],show=False)
+    #
+    # plot( 1e6*deviation_angles,diffraction_result._phases[0,:,0],
+    #       1e6*deviation_angles,diffraction_result._phases[0,:,1],
+    #       1e6*deviation_angles,diffraction_result._phases[0,:,2],
+    #       title="Phase for photon energy = %4.3f "%photon_energies[0],
+    #       xtitle="Deviation angle urad",ytitle="Reflectivity",
+    #       legend=['s-pol','p-pol','p minus s pol'],show=False)
 
 
     # Create a PlotData1D object.
     print("\nCreating the diffraction profile plots...")
 
     values = Values()
-    plot_1d = plot_diffraction_1d(diffraction_result, values.deg)
+    # plot_1d = plot_diffraction_1d(diffraction_result, values.deg)
 
     # if False:
     #     # Unwrap the phases.
@@ -354,12 +359,12 @@ if __name__ == "__main__":
 
 
 
-
+    print("Inclination",values.inclination_angle)
 
     # Create a MuellerDiffraction object.
     mueller_diffraction = MuellerDiffraction(diffraction_result,
-                                             values.incoming_stokes_vector,
-                                             values.inclination_angle)
+                                             StokesVector([1,1,0,1]),
+                                             inclination_angle=0) # np.pi*45/180)
 
     # Create a MullerResult object.
     print("\nCalculating the Stokes vector...")
@@ -373,6 +378,6 @@ if __name__ == "__main__":
     stokes_plot(plot_1d, values)
 
     # Plot the degree of circular polarization.
-    polarization_degree_plot(plot_1d, values)
+    # polarization_degree_plot(plot_1d, values)
 
     plt.show()

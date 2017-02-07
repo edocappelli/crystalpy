@@ -137,6 +137,7 @@ class Values(object):
                 self.miller_k = int(input("\nMiller K: "))
                 self.miller_l = int(input("\nMiller L: "))
                 self.asymmetry_angle = float(input("\nAsymmetry angle [degrees]: "))
+                self.azimuthal_angle = float(input("\nAzimuthal angle [degrees]: "))
                 self.energy_min = float(input("\nMinimum energy [keV]: "))
                 self.energy_max = float(input("\nMaximum energy [keV]: "))
                 self.energy_points = int(input("\nNumber of energy points: "))

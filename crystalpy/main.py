@@ -321,7 +321,7 @@ if __name__ == "__main__":
     # Create a MuellerDiffraction object.
     mueller_diffraction = MuellerDiffraction(diffraction_result,
                                              values.incoming_stokes_vector,
-                                             values.inclination_angle)
+                                             values.inclination_angle*np.pi/180.0)
 
     # Create a MullerResult object.
     print("\nCalculating the Stokes vector...")

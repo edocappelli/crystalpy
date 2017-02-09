@@ -108,7 +108,7 @@ class DiffractionResult(object):
         energy_index = self._energyIndexByEnergy(energy)
         return self._intensities[energy_index, :, self.INDEX_POLARIZATION_S]
 
-    def sPhaseByEnergy(self, energy, deg):
+    def sPhaseByEnergy(self, energy, deg=False):
         """
         Returns the phase of the S polarization.
         :param energy: Energy to return phase for.
@@ -118,7 +118,8 @@ class DiffractionResult(object):
         energy_index = self._energyIndexByEnergy(energy)
         if deg:
             return self._phases[energy_index, :, self.INDEX_POLARIZATION_S] * 180 / numpy.pi
-        return self._phases[energy_index, :, self.INDEX_POLARIZATION_S]
+        else:
+            return self._phases[energy_index, :, self.INDEX_POLARIZATION_S]
 
     def pIntensityByEnergy(self, energy):
         """
@@ -129,7 +130,7 @@ class DiffractionResult(object):
         energy_index = self._energyIndexByEnergy(energy)
         return self._intensities[energy_index, :, self.INDEX_POLARIZATION_P]
 
-    def pPhaseByEnergy(self, energy, deg):
+    def pPhaseByEnergy(self, energy, deg=False):
         """
         Returns the phase of the P polarization.
         :param energy: Energy to return phase for.
@@ -139,7 +140,8 @@ class DiffractionResult(object):
         energy_index = self._energyIndexByEnergy(energy)
         if deg:
             return self._phases[energy_index, :, self.INDEX_POLARIZATION_P] * 180 / numpy.pi
-        return self._phases[energy_index, :, self.INDEX_POLARIZATION_P]
+        else:
+            return self._phases[energy_index, :, self.INDEX_POLARIZATION_P]
 
     def differenceIntensityByEnergy(self, energy):
         """
@@ -150,7 +152,7 @@ class DiffractionResult(object):
         energy_index = self._energyIndexByEnergy(energy)
         return self._intensities[energy_index, :, self.INDEX_DIFFERENCE_PS]
 
-    def differencePhaseByEnergy(self, energy, deg):
+    def differencePhaseByEnergy(self, energy, deg=False):
         """
         Returns the phase of the difference between S and P polarizations.
         :param energy: Energy to return phase for.
@@ -160,7 +162,8 @@ class DiffractionResult(object):
         energy_index = self._energyIndexByEnergy(energy)
         if deg:
             return self._phases[energy_index, :, self.INDEX_DIFFERENCE_PS] * 180 / numpy.pi
-        return self._phases[energy_index, :, self.INDEX_DIFFERENCE_PS]
+        else:
+            return self._phases[energy_index, :, self.INDEX_DIFFERENCE_PS]
 
     def sIntensityByDeviation(self, deviation):
         """
@@ -171,7 +174,7 @@ class DiffractionResult(object):
         deviation_index = self._deviationIndexByDeviation(deviation)
         return self._intensities[:, deviation_index, self.INDEX_POLARIZATION_S]
 
-    def sPhaseByDeviation(self, deviation, deg):
+    def sPhaseByDeviation(self, deviation, deg=False):
         """
         Returns the phase of the S polarization.
         :param deviation: Deviation to return phase for.
@@ -181,7 +184,8 @@ class DiffractionResult(object):
         deviation_index = self._deviationIndexByDeviation(deviation)
         if deg:
             return self._phases[deviation_index, :, self.INDEX_POLARIZATION_S] * 180 / numpy.pi
-        return self._phases[:, deviation_index, self.INDEX_POLARIZATION_S]
+        else:
+            return self._phases[:, deviation_index, self.INDEX_POLARIZATION_S]
 
     def pIntensityByDeviation(self, deviation):
         """
@@ -192,7 +196,7 @@ class DiffractionResult(object):
         deviation_index = self._deviationIndexByDeviation(deviation)
         return self._intensities[:, deviation_index, self.INDEX_POLARIZATION_P]
 
-    def pPhaseByDeviation(self, deviation, deg):
+    def pPhaseByDeviation(self, deviation, deg=False):
         """
         Returns the phase of the P polarization.
         :param deviation: Deviation to return phase for.
@@ -202,7 +206,8 @@ class DiffractionResult(object):
         deviation_index = self._deviationIndexByDeviation(deviation)
         if deg:
             return self._phases[deviation_index, :, self.INDEX_POLARIZATION_P] * 180 / numpy.pi
-        return self._phases[:, deviation_index, self.INDEX_POLARIZATION_P]
+        else:
+            return self._phases[:, deviation_index, self.INDEX_POLARIZATION_P]
 
     def differenceIntensityByDeviation(self, deviation):
         """
@@ -213,7 +218,7 @@ class DiffractionResult(object):
         deviation_index = self._deviationIndexByDeviation(deviation)
         return self._intensities[:, deviation_index, self.INDEX_DIFFERENCE_PS]
 
-    def differencePhaseByDeviation(self, deviation, deg):
+    def differencePhaseByDeviation(self, deviation, deg=False):
         """
         Returns the phase of the difference between S and P polarizations.
         :param deviation: Deviation to return phase for.
@@ -223,7 +228,8 @@ class DiffractionResult(object):
         deviation_index = self._deviationIndexByDeviation(deviation)
         if deg:
             return self._phases[deviation_index, :, self.INDEX_DIFFERENCE_PS] * 180 / numpy.pi
-        return self._phases[:, deviation_index, self.INDEX_DIFFERENCE_PS]
+        else:
+            return self._phases[:, deviation_index, self.INDEX_DIFFERENCE_PS]
 
     def add(self, energy, deviation, s_complex_amplitude, p_complex_amplitude, difference_complex_amplitude):
         """

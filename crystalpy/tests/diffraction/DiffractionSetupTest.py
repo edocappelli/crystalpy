@@ -21,7 +21,8 @@ def diffractionSetup():
                                          miller_h=1,
                                          miller_k=1,
                                          miller_l=1,
-                                         asymmetry_angle=11,
+                                         asymmetry_angle=10*numpy.pi/180,
+                                         azimuthal_angle=0.0,
                                          incoming_photons=photons)
     return diffraction_setup
 
@@ -44,7 +45,9 @@ class DiffractionSetupTest(unittest.TestCase):
         self.assertEqual(diffraction_setup._miller_l,
                          1)
         self.assertEqual(diffraction_setup._asymmetry_angle,
-                         11)
+                         10*numpy.pi/180)
+        self.assertEqual(diffraction_setup._azimuthal_angle,
+                         0)
 
     def testGeometryType(self):
         diffraction_setup = diffractionSetup()
@@ -79,7 +82,11 @@ class DiffractionSetupTest(unittest.TestCase):
     def testAsymmetryAngle(self):
         diffraction_setup = diffractionSetup()
         self.assertEqual(diffraction_setup.asymmetryAngle(),
-                         11)
+                         10*numpy.pi/180)
+    def testAzymuthalAngle(self):
+        diffraction_setup = diffractionSetup()
+        self.assertEqual(diffraction_setup.azimuthalAngle(),
+                         0)
 
     def testEnergyMin(self):
         diffraction_setup = diffractionSetup()
@@ -96,26 +103,27 @@ class DiffractionSetupTest(unittest.TestCase):
         self.assertEqual(diffraction_setup.energyMin(),
                          10000)
 
-    @unittest.expectedFailure
-    def testAngleDeviationMin(self):
-        diffraction_setup = diffractionSetup()
-        self.assertAlmostEqual(diffraction_setup.angleDeviationMin(),
-                               -100.0e-6)
-    @unittest.expectedFailure
-    def testAngleDeviationMax(self):
-        diffraction_setup = diffractionSetup()
-        self.assertAlmostEqual(diffraction_setup.angleDeviationMax(),
-                               100.0e-6)
+    # @unittest.expectedFailure
+    # def testAngleDeviationMin(self):
+    #     diffraction_setup = diffractionSetup()
+    #     self.assertAlmostEqual(diffraction_setup.angleDeviationMin(),
+    #                            -100.0e-6)
+    # @unittest.expectedFailure
+    # def testAngleDeviationMax(self):
+    #     diffraction_setup = diffractionSetup()
+    #     self.assertAlmostEqual(diffraction_setup.angleDeviationMax(),
+    #                            100.0e-6)
+
     def testAngleDeviationPoints(self):
         diffraction_setup = diffractionSetup()
         self.assertEqual(diffraction_setup.angleDeviationPoints(),
                          175)
 
-    @unittest.expectedFailure
-    def testAngleDeviationGrid(self):
-        diffraction_setup = diffractionSetup()
-        self.assertAlmostEqual(numpy.linalg.norm(diffraction_setup.angleDeviationGrid()-numpy.linspace(-100.0e-6, 100.0e-6, 175)),
-                               0.0)
+    # @unittest.expectedFailure
+    # def testAngleDeviationGrid(self):
+    #     diffraction_setup = diffractionSetup()
+    #     self.assertAlmostEqual(numpy.linalg.norm(diffraction_setup.angleDeviationGrid()-numpy.linspace(-100.0e-6, 100.0e-6, 175)),
+    #                            0.0)
 
     def testAngleBragg(self):
         diffraction = diffractionSetup()
@@ -149,23 +157,36 @@ class DiffractionSetupTest(unittest.TestCase):
     def testNormalBragg(self):
         diffraction = diffractionSetup()
 
-        bragg_normal = diffraction.normalBragg()
-        self.assertLess( (bragg_normal.subtractVector(Vector(0.0, 0.0, 20039397415.8))).norm(),
-                         0.1)
+        bragg_normal = diffraction.normalBragg(return_normalized=True)
+        # print("<><>",bragg_normal.components())
+        # [ 0.          0.17364818  0.98480775]
+
+        self.assertAlmostEqual (bragg_normal.components()[0],0.)
+        self.assertAlmostEqual (bragg_normal.components()[1],0.17364818)
+        self.assertAlmostEqual (bragg_normal.components()[2],0.98480775)
 
     def testNormalSurface(self):
         diffraction = diffractionSetup()
 
         surface_normal = diffraction.normalSurface()
         self.assertEqual(surface_normal,
-                         Vector(0.190808995377, 0.0, 0.981627183448))
+                         Vector(0,0,1))
 
     def testIncomingPhotonDirection(self):
         diffraction = diffractionSetup()
 
+        photon_direction = diffraction.incomingPhotonDirection(8000, 0)
+        self.assertAlmostEqual (photon_direction.components()[0],0.)
+        self.assertAlmostEqual (photon_direction.components()[1],0.91134144)
+        self.assertAlmostEqual (photon_direction.components()[2],-0.41165129)
+
+
+
         photon_direction = diffraction.incomingPhotonDirection(8000, 0.01)
-        self.assertEqual(photon_direction,
-                         Vector(-0.966458756542, 0.0, -0.256821868038))
+        self.assertAlmostEqual (photon_direction.components()[0],0.)
+        self.assertAlmostEqual (photon_direction.components()[1],0.90717943)
+        self.assertAlmostEqual (photon_direction.components()[2],-0.42074397)
+
 
     def testDeviationOfIncomingPhoton(self):
         diffraction = diffractionSetup()
@@ -183,7 +204,7 @@ class DiffractionSetupTest(unittest.TestCase):
         unitcell_volume = diffraction.unitcellVolume()
         self.assertAlmostEqual(unitcell_volume, 160.1649322509)
 
-    @unittest.expectedFailure
+    # @unittest.expectedFailure
     def testAsInfoDictionary(self):
         diffraction_setup = diffractionSetup()
 
@@ -198,21 +219,23 @@ class DiffractionSetupTest(unittest.TestCase):
         self.assertEqual(info_dict["Miller indices (h,k,l)"],
                          "(1,1,1)")
         self.assertEqual(info_dict["Asymmetry Angle"],
-                         "11")
+                         str(10.0*numpy.pi/180))
+        self.assertEqual(info_dict["Azimuthal Angle"],
+                         str(0.0))
         self.assertEqual(info_dict["Minimum energy"],
                          "10000.0")
         self.assertEqual(info_dict["Maximum energy"],
                          "10000.0")
         self.assertEqual(info_dict["Number of energy points"],
                          "1")
-        self.assertEqual(info_dict["Angle deviation minimum"],
-                         "-1.00e-04")
-        self.assertEqual(info_dict["Angle deviation maximum"],
-                         "1.00e-04")
+        # self.assertEqual(info_dict["Angle deviation minimum"],
+        #                  "-1.00e-04")
+        # self.assertEqual(info_dict["Angle deviation maximum"],
+        #                  "1.00e-04")
         self.assertEqual(info_dict["Angle deviation points"],
                          "175")
 
-    @unittest.expectedFailure
+    # @unittest.expectedFailure
     def testOperatorEqual(self):
         diffraction_setup_one = diffractionSetup()
         diffraction_setup_two = DiffractionSetup(BraggDiffraction(),
@@ -222,18 +245,14 @@ class DiffractionSetupTest(unittest.TestCase):
                                                  miller_k=1,
                                                  miller_l=1,
                                                  asymmetry_angle=11,
-                                                 energy_min=8000,
-                                                 energy_max=8000,
-                                                 energy_points=1,
-                                                 angle_deviation_min= -100.0e-6,
-                                                 angle_deviation_max=100e-6,
-                                                 angle_deviation_points=175)
+                                                 azimuthal_angle=0.0,
+                                                 incoming_photons=None)
 
 
         self.assertTrue(diffraction_setup_one == diffractionSetup())
         self.assertFalse(diffraction_setup_one == diffraction_setup_two)
 
-    @unittest.expectedFailure
+    # @unittest.expectedFailure
     def testOperatorNotEqual(self):
         diffraction_setup_one = diffractionSetup()
         diffraction_setup_two = DiffractionSetup(BraggDiffraction(),
@@ -242,13 +261,9 @@ class DiffractionSetupTest(unittest.TestCase):
                                                  miller_h=1,
                                                  miller_k=1,
                                                  miller_l=1,
-                                                 asymmetry_angle=11,
-                                                 energy_min=8000,
-                                                 energy_max=8000,
-                                                 energy_points=1,
-                                                 angle_deviation_min= -100.0e-6,
-                                                 angle_deviation_max=100e-6,
-                                                 angle_deviation_points=175)
+                                                 asymmetry_angle=10*numpy.pi/180,
+                                                 azimuthal_angle=0.0,
+                                                 incoming_photons=None)
 
 
         self.assertTrue(diffraction_setup_one != diffraction_setup_two)

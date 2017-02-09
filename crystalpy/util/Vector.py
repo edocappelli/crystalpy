@@ -122,7 +122,7 @@ class Vector(object):
     def rotateAroundAxis(self, rotation_axis, angle):
         """
         Rotates the vector around an axis.
-        :param rotation_axis: Vector specifying the rotation axis.
+        :param rotation_axis: Vector specifying the rotation axis (not necessarily unit vector).
         :param angle: Rotation angle.
         :return: Rotated vector.
         """

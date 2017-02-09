@@ -2,6 +2,9 @@
 Represents a photon.
 Except for energy all units are in SI. Energy is in eV.
 """
+
+#TODO: extend to include electric field? Rename to scalar photon?
+
 import scipy.constants.codata
 
 

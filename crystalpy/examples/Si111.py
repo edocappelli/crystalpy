@@ -5,23 +5,27 @@ from crystalpy.diffraction.Diffraction import Diffraction
 from crystalpy.polarization.MuellerDiffraction import MuellerDiffraction
 from crystalpy.polarization.StokesVector import StokesVector
 
+import numpy
 
-
-if __name__ == "__main__":
+def calculate_standard_interface():
 
     # Create a diffraction setup.
 
     print("\nCreating a diffraction setup...")
     diffraction_setup = DiffractionSetupSweeps(geometry_type          = BraggDiffraction(),  # GeometryType object
                                                crystal_name           = "Si",                             # string
-                                               thickness              = 1e-4,                             # meters
+                                               thickness              = 1e-2
+
+
+
+                                               ,                             # meters
                                                miller_h               = 1,                                # int
                                                miller_k               = 1,                                # int
                                                miller_l               = 1,                                # int
-                                               asymmetry_angle        = 0.0,                              # radians
+                                               asymmetry_angle        = 0,#10.0*numpy.pi/180.,                              # radians
                                                azimuthal_angle        = 0.0,                              # radians
-                                               energy_min             = 8000.0,                           # eV
-                                               energy_max             = 8000.0,                           # eV
+                                               energy_min             = 10000.0,                           # eV
+                                               energy_max             = 10000.0,                           # eV
                                                energy_points          = 1,                                # int
                                                angle_deviation_min    = -100e-6,                          # radians
                                                angle_deviation_max    = 100e-6,                           # radians
@@ -48,9 +52,15 @@ if __name__ == "__main__":
     print("\nCalculating the Stokes vector...")
     mueller_result = mueller_diffraction.calculate_stokes()
 
+    return mueller_result
+
+
+def make_plots(mueller_result):
     #
     # plots
     #
+    diffraction_result = mueller_result.diffraction_result
+
     photon_energies = diffraction_result.energies()
     deviation_angles = diffraction_result.angleDeviations()
 
@@ -86,3 +96,9 @@ if __name__ == "__main__":
     plot(1e6*deviation_angles,mueller_result._s3[0]/mueller_result._s0[0],yrange=[-1,1],
          title="Circular Polarization S3/S0",xtitle="Deviation angle [urad]",ytitle="S3/S0",show=True)
 
+
+
+
+if __name__ == "__main__":
+    mueller_result = calculate_standard_interface()
+    make_plots(mueller_result)

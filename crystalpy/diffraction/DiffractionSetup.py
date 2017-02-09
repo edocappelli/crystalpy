@@ -37,20 +37,23 @@ class DiffractionSetup(object):
         self._miller_k = miller_k
         self._miller_l = miller_l
         self._asymmetry_angle = asymmetry_angle  # degrees
-        self._incoming_photons = incoming_photons
 
         # Edoardo: I add an azimuthal angle.
         self._azimuthal_angle = azimuthal_angle  # degrees
-
-        # Set deviations and energies caches to None.
-        self._deviations = None
-        self._energies = None
 
         # Set Debye Waller factor.
         self._debyeWaller = 1.0
 
         # Load crystal from xraylib.
         self._crystal = xraylib.Crystal_GetCrystal(self.crystalName())
+
+        # photons stuff
+
+        # TODO: the "incoming_photons" and all related methods must be moved outside??
+        # Set deviations and energies caches to None.
+        self._incoming_photons = incoming_photons
+        self._deviations = None
+        self._energies = None
 
     def incomingPhotons(self):
         """
@@ -253,30 +256,32 @@ class DiffractionSetup(object):
 
         return d_spacing
 
-    def normalBragg(self):
+    def normalBragg(self,return_normalized=False):
         """
-        Calculates the normal on the reflection lattice plane B_H.
-        :return: Bragg normal B_H.
+        Calculates the B_H vecor, normal on the reflection lattice plane, with modulus 2 pi / d_spacing .
+        :param return_normalized: if True the returned vector is normalized.
+        :return: B_H vector
         """
         # Edoardo: I use the geometrical convention from
         # M.Sanchez del Rio et al., J.Appl.Cryst.(2015). 48, 477-491.
 
+
+        g_modulus = 2.0 * np.pi / (self.dSpacing() * 1e-10)
         # Let's start from a vector parallel to the surface normal (z axis).
-        temp_normal_bragg = Vector(0, 0, 1).scalarMultiplication(2.0 * np.pi / (self.dSpacing() * 1e-10))
+        temp_normal_bragg = Vector(0, 0, 1).scalarMultiplication(g_modulus)
 
         # Let's now rotate this vector of an angle alphaX around the y axis (according to the right-hand-rule).
         alpha_x = self.asymmetryAngle()
-        temp_normal_bragg = temp_normal_bragg.rotateAroundAxis(Vector(0, 1, 0), alpha_x)
+        temp_normal_bragg = temp_normal_bragg.rotateAroundAxis(Vector(1, 0, 0), -alpha_x)
 
         # Let's now rotate this vector of an angle phi around the z axis (following the ISO standard 80000-2:2009).
         phi = self.azimuthalAngle()
         normal_bragg = temp_normal_bragg.rotateAroundAxis(Vector(0, 0, 1), phi)
 
-        # Mark's version:
-        # normal_bragg = Vector(0, 0, 1).scalarMultiplication(2.0 * np.pi / (self.dSpacing() * 1e-10))
-
-        return normal_bragg
-
+        if return_normalized:
+            return normal_bragg.getNormalizedVector()
+        else:
+            return normal_bragg
     def normalSurface(self):
         """
         Calculates surface normal n.
@@ -306,6 +311,10 @@ class DiffractionSetup(object):
         # Edoardo: I use the geometrical convention from
         # M.Sanchez del Rio et al., J.Appl.Cryst.(2015). 48, 477-491.
 
+
+        # TODO: vectorize this part as in https://github.com/srio/CRYSTAL/blob/master/crystal3.F90
+
+
         # angle between the incoming photon direction and the surface normal (z axis).
         # a positive deviation means the photon direction lies closer to the surface normal.
         angle = np.pi / 2.0 - (self.angleBragg(energy) + self.asymmetryAngle() + deviation)
@@ -321,6 +330,7 @@ class DiffractionSetup(object):
         # photon_direction = Vector(-np.sin(angle),
                                   # 0,
                                   # -np.cos(angle))
+        # TODO: it seems that we should apply the rotation azimuthal_angle
 
         return photon_direction
 
@@ -350,6 +360,7 @@ class DiffractionSetup(object):
 
         return unit_cell_volume
 
+    # TODO: rename toDictionary ??
     def asInfoDictionary(self):
         """
         Returns this setup in InfoDictionary form.

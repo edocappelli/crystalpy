@@ -30,19 +30,19 @@ def suite():
         unittest.makeSuite(VectorTest, 'test'),
         unittest.makeSuite(PhotonTest, 'test'),
 
-        # unittest.makeSuite(ComplexAmplitudeTest, 'test'),
-        # unittest.makeSuite(GeometryTypeTest, 'test'),
-        # unittest.makeSuite(PerfectCrystalDiffractionTest, 'test'),
-        # unittest.makeSuite(DiffractionSetupTest, 'test'),
-        # unittest.makeSuite(DiffractionSetupSweepsTest, 'test'),
-        # unittest.makeSuite(DiffractionTest, 'test'),
-        # unittest.makeSuite(DiffractionResultTest, 'test'),
+        unittest.makeSuite(ComplexAmplitudeTest, 'test'),
+        unittest.makeSuite(GeometryTypeTest, 'test'),
+        unittest.makeSuite(PerfectCrystalDiffractionTest, 'test'),
+        unittest.makeSuite(DiffractionSetupTest, 'test'),
+        unittest.makeSuite(DiffractionSetupSweepsTest, 'test'),
+        unittest.makeSuite(DiffractionTest, 'test'),
+        unittest.makeSuite(DiffractionResultTest, 'test'),
 
         # tests by Edoardo.
         unittest.makeSuite(CrystalPhasePlateTest, "test"),
-        # unittest.makeSuite(MuellerDiffractionTest, "test"),
+        unittest.makeSuite(MuellerDiffractionTest, "test"),
         unittest.makeSuite(MuellerMatrixTest, "test"),
-        # unittest.makeSuite(MuellerResultTest, "test"),
+        unittest.makeSuite(MuellerResultTest, "test"),
         unittest.makeSuite(StokesVectorTest, "test")
     )
     return unittest.TestSuite(suites)

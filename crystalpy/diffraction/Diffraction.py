@@ -337,7 +337,7 @@ class Diffraction(object):
         phase_sigma = complex_amplitudes["S"].phase()
 
         # Get a CrystalPhasePlate instance.
-        phase_plate = CrystalPhasePlate(incoming_stokes_vector=incoming_stokes_vector,
+        phase_plate = CrystalPhasePlate( #incoming_stokes_vector=incoming_stokes_vector,
                                         intensity_sigma=intensity_sigma,
                                         phase_sigma=phase_sigma,
                                         intensity_pi=intensity_pi,
@@ -345,7 +345,7 @@ class Diffraction(object):
                                         inclination_angle=inclination_angle)
 
         # Use intensities and phases to calculate the Stokes vector for the outgoing photon.
-        outgoing_stokes_vector = phase_plate.calculate_stokes_vector()
+        outgoing_stokes_vector = phase_plate.calculate_stokes_vector(incoming_stokes_vector)
 
         # Piece together the PolarizedPhoton object.
         outgoing_polarized_photon = PolarizedPhoton(energy_in_ev=outgoing_photon.energy(),

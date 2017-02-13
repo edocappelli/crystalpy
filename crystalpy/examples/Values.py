@@ -2,7 +2,7 @@
 Allows the user to input the diffraction parameters or to use default values.
 """
 from crystalpy.diffraction import GeometryType
-from crystalpy.polarization.StokesVector import StokesVector
+from crystalpy.util.StokesVector import StokesVector
 
 
 class Interval(object):

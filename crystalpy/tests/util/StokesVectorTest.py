@@ -1,11 +1,11 @@
 """
 Unittest for StokesVector class.
 """
-import numpy as np
-
 import unittest
 
-from crystalpy.polarization.StokesVector import StokesVector
+import numpy as np
+
+from crystalpy.util.StokesVector import StokesVector
 
 
 def _generate_element_list():

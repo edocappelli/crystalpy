@@ -3,6 +3,7 @@ from crystalpy.polarization.MuellerMatrix import MuellerMatrix
 import numpy as np
 
 
+# TODO rename to PerfectCrystalMuellerMatrix
 class CrystalPhasePlate(MuellerMatrix):
 
     def __init__(self, # incoming_stokes_vector,

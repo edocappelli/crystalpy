@@ -42,6 +42,7 @@ class MuellerDiffraction(object):
         """
         return self._diffraction_result.pPhaseByEnergy(energy, deg=False)[index]
 
+    # TODO: rename to add_photon??
     def _calculate_stokes_for_energy(self, energy, mueller_result):
         """
         Calculates the outgoing Stokes vectors (deviation) for a certain energy.

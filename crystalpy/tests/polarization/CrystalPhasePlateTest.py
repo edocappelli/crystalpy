@@ -4,10 +4,10 @@ Unittest for CrystalPhasePlate class.
 
 import unittest
 
-from crystalpy.polarization.CrystalPhasePlate import CrystalPhasePlate
-from crystalpy.polarization.StokesVector import StokesVector
-
 import numpy as np
+
+from crystalpy.polarization.CrystalPhasePlate import CrystalPhasePlate
+from crystalpy.util.StokesVector import StokesVector
 
 
 class CrystalPhasePlateTest(unittest.TestCase):

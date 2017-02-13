@@ -7,6 +7,8 @@ from numpy import asarray
 
 class StokesVector(object):
 
+    #TODO define elements individually and not in list?
+
     def __init__(self, element_list):
         """
         Constructor.

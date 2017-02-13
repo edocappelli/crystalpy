@@ -3,7 +3,9 @@ Represents a Mueller matrix.
 Except for energy all units are in SI. Energy is in eV.
 """
 import numpy as np
-from crystalpy.polarization.StokesVector import StokesVector
+
+from crystalpy.util.StokesVector import StokesVector
+
 
 class MuellerMatrix(object):
 

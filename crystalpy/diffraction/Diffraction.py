@@ -13,7 +13,7 @@ from crystalpy.diffraction.DiffractionExceptions import ReflectionImpossibleExce
                                                                     StructureFactorF0isZeroException, StructureFactorFHisZeroException, \
                                                                     StructureFactorFHbarIsZeroException
 from crystalpy.util.Photon import Photon
-from crystalpy.util.PhotonBunch import PhotonBunch, PolarizedPhoton
+from crystalpy.util.PolarizedPhotonBunch import PolarizedPhotonBunch, PolarizedPhoton
 from crystalpy.diffraction.DiffractionResult import DiffractionResult
 from crystalpy.diffraction.PerfectCrystalDiffraction import PerfectCrystalDiffraction
 from crystalpy.polarization.CrystalPhasePlate import CrystalPhasePlate
@@ -365,13 +365,13 @@ class Diffraction(object):
         :return: PhotonBunch object made up of diffracted/transmitted photons.
         """
         # Create PhotonBunch instance.
-        outgoing_bunch = PhotonBunch([])
+        outgoing_bunch = PolarizedPhotonBunch([])
 
         # Retrieve the photon bunch from the diffraction setup.
         incoming_bunch = diffraction_setup.incomingPhotons()
 
         # Check that photon_bunch is indeed a PhotonBunch object.
-        if not isinstance(incoming_bunch, PhotonBunch):
+        if not isinstance(incoming_bunch, PolarizedPhotonBunch):
             raise Exception("the incomingPhoton method in the setup is not yielding a PhotonBunch object!")
 
         # Raise calculation start.

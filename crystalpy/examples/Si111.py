@@ -1,11 +1,10 @@
-from crystalpy.diffraction.GeometryType import GeometryType, BraggDiffraction
+from crystalpy.diffraction.GeometryType import BraggDiffraction
 from crystalpy.diffraction.DiffractionSetupSweeps import DiffractionSetupSweeps
 from crystalpy.diffraction.Diffraction import Diffraction
 
 from crystalpy.polarization.MuellerDiffraction import MuellerDiffraction
-from crystalpy.polarization.StokesVector import StokesVector
+from crystalpy.util.StokesVector import StokesVector
 
-import numpy
 
 def calculate_standard_interface():
 
@@ -24,8 +23,8 @@ def calculate_standard_interface():
                                                miller_l               = 1,                                # int
                                                asymmetry_angle        = 0,#10.0*numpy.pi/180.,                              # radians
                                                azimuthal_angle        = 0.0,                              # radians
-                                               energy_min             = 10000.0,                           # eV
-                                               energy_max             = 10000.0,                           # eV
+                                               energy_min             = 8000.0,                           # eV
+                                               energy_max             = 8000.0,                           # eV
                                                energy_points          = 1,                                # int
                                                angle_deviation_min    = -100e-6,                          # radians
                                                angle_deviation_max    = 100e-6,                           # radians

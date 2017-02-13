@@ -14,7 +14,7 @@ from crystalpy.tests.polarization.CrystalPhasePlateTest import CrystalPhasePlate
 from crystalpy.tests.polarization.MuellerDiffractionTest import MuellerDiffractionTest
 from crystalpy.tests.polarization.MuellerMatrixTest import MuellerMatrixTest
 from crystalpy.tests.polarization.MuellerResultTest import MuellerResultTest
-from crystalpy.tests.polarization.StokesVectorTest import StokesVectorTest
+from crystalpy.tests.util.StokesVectorTest import StokesVectorTest
 
 # util
 from crystalpy.tests.util.VectorTest import VectorTest

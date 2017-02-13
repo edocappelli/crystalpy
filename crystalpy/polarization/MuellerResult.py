@@ -34,6 +34,7 @@ class MuellerResult(object):
         self._polarization_degree = numpy.zeros((number_energies,
                                                  number_angles))
 
+    # TODO: not needed
     def energies(self):
         """
         Returns the energies used for these results.
@@ -50,6 +51,7 @@ class MuellerResult(object):
         energy_index = abs(self.energies()-energy).argmin()
         return energy_index
 
+    # TODO: Redundant?
     def angle_deviations(self):
         """
         Returns the angle deviations used for these results.

@@ -41,7 +41,7 @@ class PolarizedPhoton(Photon):
         and considering a clockwise rotation as a positive deviation.
         """
         vector = self.unitDirectionVector().components()  # ndarray([x, y, z])
-        deviation = atan2(-vector[2], vector[1])
+        deviation = atan2(vector[2], vector[1])
 
         return deviation
 

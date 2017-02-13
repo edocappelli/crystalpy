@@ -21,9 +21,10 @@ class CrystalPhasePlate(MuellerMatrix):
                  inclination_angle)
         super(CrystalPhasePlate, self).__init__(phase_plate_matrix)
 
-    def _create_matrix(self,intensity_sigma, phase_sigma,
-                 intensity_pi, phase_pi,
-                 inclination_angle):
+    def _create_matrix(self,
+                        intensity_sigma, phase_sigma,
+                        intensity_pi, phase_pi,
+                        inclination_angle):
         """
         TODO: put article with the notation
         :return: Mueller matrix for a phase plate (numpy.ndarray).

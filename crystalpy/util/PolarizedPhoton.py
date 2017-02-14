@@ -29,6 +29,12 @@ class PolarizedPhoton(Photon):
 
         super(PolarizedPhoton, self).__init__(energy_in_ev, direction_vector)
 
+    def duplicate(self):
+        return PolarizedPhoton(self._energy_in_ev,
+                               self._unit_direction_vector.duplicate(),
+                               self._stokes_vector.duplicate())
+
+    #TODO change to camelCase
     def set_unit_direction_vector(self, direction_vector):
         """
         :type direction_vector: Vector

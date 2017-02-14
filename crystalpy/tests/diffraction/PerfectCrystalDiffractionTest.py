@@ -254,7 +254,7 @@ class PerfectCrystalDiffractionTest(unittest.TestCase):
 
         reflectivity = perfect_crystal_diffraction.calculateDiffraction(photon_in)
 
-        self.assertAlmostEqual(reflectivity["S"].intensity(), 537732505.2538414     ,10  )
+        self.assertAlmostEqual(reflectivity["S"].intensity(), 537732505.2538414     ,4  )
         self.assertAlmostEqual(reflectivity["S"].phase(),     -1.3701895491121583     )
-        self.assertAlmostEqual(reflectivity["P"].intensity(), 2857952712.482391     , 19)
+        self.assertAlmostEqual(reflectivity["P"].intensity(), 2857952712.482391     , 2)
         self.assertAlmostEqual(reflectivity["P"].phase(),     -2.1266501727883536     )

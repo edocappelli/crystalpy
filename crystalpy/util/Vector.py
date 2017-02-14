@@ -25,6 +25,9 @@ class Vector(object):
                       components[1],
                       components[2])
 
+    def duplicate(self):
+        return Vector(self.components()[0],self.components()[1],self.components()[2])
+
     def setComponents(self, x, y, z):
         """
         Sets vector components.
@@ -215,6 +218,7 @@ class Vector(object):
 
         return vector_with_angle
 
+    # TODO: return a text array, do not print
     def printComponents(self):
         """
         Prints the components of this vector.
@@ -223,6 +227,7 @@ class Vector(object):
         print("Vector: y", self.components()[1])
         print("Vector: z", self.components()[2])
 
+    # TODO camelCase
     def to_string(self):
         """
         :return: a string object containing the four components of the Stokes vector.

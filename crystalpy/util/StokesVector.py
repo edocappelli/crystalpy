@@ -4,21 +4,26 @@ Except for energy all units are in SI. Energy is in eV.
 """
 from numpy import asarray
 
+# TODO change methods to camelCase
 
 class StokesVector(object):
 
     #TODO define elements individually and not in list?
 
-    def __init__(self, element_list):
+    def __init__(self, element_list=[0.0,0.0,0.0,0.0]):
         """
         Constructor.
         :param element_list: list containing the Stokes parameters S0,S1,S2,S3.
         """
-        self.s0 = element_list[0]
-        self.s1 = element_list[1]
-        self.s2 = element_list[2]
-        self.s3 = element_list[3]
+        self.s0 = float(element_list[0])
+        self.s1 = float(element_list[1])
+        self.s2 = float(element_list[2])
+        self.s3 = float(element_list[3])
 
+    def duplicate(self):
+        return StokesVector(self.get_array())
+
+    # TODO change toList, toArray
     def get_array(self, numpy=True):
         """
         Generates a 1x4 array from the Stokes vector components.
@@ -35,6 +40,22 @@ class StokesVector(object):
             return asarray(result)
 
         return result
+
+    def set_array(self, array):
+
+        self.s0 = float(array[0])
+        self.s1 = float(array[1])
+        self.s2 = float(array[2])
+        self.s3 = float(array[3])
+
+    def set_values(self, s0,s1,s2,s3):
+
+        self.s0 = float(s0)
+        self.s1 = float(s1)
+        self.s2 = float(s2)
+        self.s3 = float(s3)
+
+
 
     #TODO rename to circular_polarization_degree
     def polarization_degree(self):

@@ -221,3 +221,17 @@ class VectorTest(unittest.TestCase):
                 vector_with_angle = vector.getVectorWithAngle(angle)
                 self.assertAlmostEqual(vector.angle(vector_with_angle),
                                        angle)
+    def testDuplicate(self):
+        v1 = Vector(1,2,3)
+        v2 = v1.duplicate()
+
+        self.assertTrue( v1.components()[0] == v2.components()[0])
+        self.assertTrue( v1.components()[1] == v2.components()[1])
+        self.assertTrue( v1.components()[2] == v2.components()[2])
+
+        v1.setComponents(3,4,5)
+
+        self.assertFalse( v1.components()[0] == v2.components()[0])
+        self.assertFalse( v1.components()[1] == v2.components()[1])
+        self.assertFalse( v1.components()[2] == v2.components()[2])
+

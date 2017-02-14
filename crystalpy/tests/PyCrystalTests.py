@@ -20,6 +20,9 @@ from crystalpy.tests.util.StokesVectorTest import StokesVectorTest
 from crystalpy.tests.util.VectorTest import VectorTest
 from crystalpy.tests.util.PhotonTest import PhotonTest
 
+from crystalpy.tests.util.PolarizedPhotonTest import PolarizedPhotonTest
+from crystalpy.tests.util.PolarizedPhotonBunchTest import PolarizedPhotonBunchTest
+
 
 def suite():
     """
@@ -43,7 +46,9 @@ def suite():
         unittest.makeSuite(MuellerDiffractionTest, "test"),
         unittest.makeSuite(MuellerMatrixTest, "test"),
         unittest.makeSuite(MuellerResultTest, "test"),
-        unittest.makeSuite(StokesVectorTest, "test")
+        unittest.makeSuite(StokesVectorTest, "test"),
+        unittest.makeSuite(PolarizedPhotonTest, "test"),
+        unittest.makeSuite(PolarizedPhotonBunchTest, "test")
     )
     return unittest.TestSuite(suites)
 

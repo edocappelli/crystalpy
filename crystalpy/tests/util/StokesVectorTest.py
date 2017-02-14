@@ -4,6 +4,7 @@ Unittest for StokesVector class.
 import unittest
 
 import numpy as np
+from numpy.testing import assert_array_almost_equal
 
 from crystalpy.util.StokesVector import StokesVector
 
@@ -69,3 +70,9 @@ class StokesVectorTest(unittest.TestCase):
         self.assertFalse(stokes_vector1 != stokes_vector1)
         self.assertFalse(stokes_vector1 != stokes_vector2)
         self.assertTrue(stokes_vector1 != stokes_vector3)
+
+    def testDuplicate(self):
+        v1 = StokesVector([1,2,3,4])
+        v2 = v1.duplicate()
+
+        assert_array_almost_equal(v1.get_array(numpy=True),v2.get_array(numpy=True))

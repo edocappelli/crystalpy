@@ -8,11 +8,13 @@ from crystalpy.util.PolarizedPhoton import PolarizedPhoton
 
 
 # TODO: Create PhotonBunch with unpolarized photons
+# TODO change methods to camelCase
+
 class PolarizedPhotonBunch(object):
     """
     is a collection of PolarizedPhoton objects, making up the photon beam.
     """
-    def __init__(self, polarized_photons):
+    def __init__(self, polarized_photons=[]):
         """
         :param polarized_photons: bunch of PolarizedPhoton objects.
         :type polarized_photons: list(PolarizedPhoton, PolarizedPhoton, ...)
@@ -50,7 +52,6 @@ class PolarizedPhotonBunch(object):
     def __getitem__(self, key):
         return self.photon_bunch[key]
 
-    # TODO add also direction information
     # TODO create it "on the fly" do not store it in self
     def _set_dict(self):
         """
@@ -148,4 +149,3 @@ class PolarizedPhotonBunch(object):
                                str(polarized_photon.polarizationDegree()) + "\n"
             bunch_string += string_to_attach
         return bunch_string
-

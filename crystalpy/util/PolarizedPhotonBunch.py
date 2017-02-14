@@ -39,6 +39,8 @@ class PolarizedPhotonBunch(object):
 
         self._set_dict()  # Update the array_dict attribute.
 
+
+    # TODO: really work?
     def __len__(self):
         return len(self.photon_bunch)
 
@@ -87,6 +89,18 @@ class PolarizedPhotonBunch(object):
         self.array_dict["vz"] = directions[2, :]
         self.array_dict["polarization degree"] = polarization_degrees
 
+    def get_number_of_photons(self):
+        return len(self.photon_bunch)
+
+    def get_list_of_photons(self):
+        return self.photon_bunch
+
+    def get_photon_index(self,index):
+        return self.photon_bunch[index]
+
+    def set_photon_index(self,index,polarized_photon):
+
+        self.photon_bunch[index] = polarized_photon
 
     def get_array(self, key):
         """

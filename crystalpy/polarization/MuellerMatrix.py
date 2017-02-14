@@ -1,6 +1,6 @@
 """
 Represents a Mueller matrix.
-Except for energy all units are in SI. Energy is in eV.
+See, e.g., https://en.wikipedia.org/wiki/Mueller_calculus
 """
 import numpy as np
 
@@ -9,12 +9,61 @@ from crystalpy.util.StokesVector import StokesVector
 
 class MuellerMatrix(object):
 
-    def __init__(self, matrix):
+    def __init__(self, matrix=np.zeros((4,4)) ):
         """
         Constructor.
         :param matrix: Matrix as a numpy.ndarray object.
         """
         self.matrix = matrix
+
+    @classmethod
+    def initialize_as_general_linear_polarizer(cls,theta=0.0):
+        mm = MuellerMatrix()
+        mm.set_general_linear_polarizer(theta)
+        return mm
+
+    @classmethod
+    def initialize_as_linear_polarizer_horizontal(cls):
+        return cls.initialize_as_general_linear_polarizer(0.0)
+
+    @classmethod
+    def initialize_as_linear_polarizer_vertical(cls):
+        return cls.initialize_as_general_linear_polarizer(np.pi/2)
+
+    @classmethod
+    def initialize_as_linear_polarizer_plus45(cls):
+        return cls.initialize_as_general_linear_polarizer(np.pi/4)
+
+    @classmethod
+    def initialize_as_linear_polarizer_minus45(cls):
+        return cls.initialize_as_general_linear_polarizer(-np.pi/4)
+
+    @classmethod
+    def initialize_as_general_linear_retarder(cls,theta=0.0, delta=0.0):
+        mm = MuellerMatrix()
+        mm.set_general_linear_retarder(theta,delta)
+        return mm
+
+    @classmethod
+    def initialize_as_quarter_wave_plate_fast_vertical(cls):
+        return cls.initialize_as_general_linear_retarder(np.pi/2,-np.pi/2)
+
+    @classmethod
+    def initialize_as_quarter_wave_plate_fast_horizontal(cls):
+        return cls.initialize_as_general_linear_retarder(0.0,-np.pi/2)
+
+    @classmethod
+    def initialize_as_half_wave_plate(cls):
+        return cls.initialize_as_general_linear_retarder(0.0,np.pi)
+
+    @classmethod
+    def initialize_as_ideal_mirror(cls):
+        return cls.initialize_as_general_linear_retarder(0.0,np.pi)
+
+    @classmethod
+    def initialize_as_filter(cls,transmission=1.0):
+        return cls.initialize_as_general_linear_retarder(0.0,0.0).matrix_by_scalar(transmission)
+
 
     def from_matrix_to_elements(self, numpy=True):
         """
@@ -30,6 +79,9 @@ class MuellerMatrix(object):
             return result
 
         return list(result)
+
+    def get_matrix(self):
+        return self.matrix
 
     def matrix_by_scalar(self, scalar):
         """
@@ -110,6 +162,72 @@ class MuellerMatrix(object):
         :return: True if not equal. False if equal.
         """
         return not self == candidate
+
+    def set_general_linear_polarizer(self,theta):
+
+        """
+        :param theta: angle of the polarizer in rad
+        :return: Mueller matrix for a general liner polarizer (numpy.ndarray)
+                See: https://en.wikipedia.org/wiki/Mueller_calculus
+        """
+
+        # First row.
+        self.matrix[0, 0] = 0.5
+        self.matrix[0, 1] = 0.5 * np.cos(2*theta)
+        self.matrix[0, 2] = 0.5 * np.sin(2*theta)
+        self.matrix[0, 3] = 0.0
+
+        # Second row.
+        self.matrix[1, 0] = 0.5  * np.cos(2*theta)
+        self.matrix[1, 1] = 0.5  * (np.cos(2*theta))**2
+        self.matrix[1, 2] = 0.5  * np.sin(2*theta) * np.cos(2*theta)
+        self.matrix[1, 3] = 0.0
+
+        # Third row.
+        self.matrix[2, 0] = 0.5 * np.sin(2*theta)
+        self.matrix[2, 1] = 0.5 * np.sin(2*theta) * np.cos(2*theta)
+        self.matrix[2, 2] = 0.5 * (np.sin(2*theta))**2
+        self.matrix[2, 3] = 0.0
+
+        # Fourth row.
+        self.matrix[3, 0] = 0.0
+        self.matrix[3, 1] = 0.0
+        self.matrix[3, 2] = 0.0
+        self.matrix[3, 3] = 0.0
+
+
+    def set_general_linear_retarder(self,theta,delta=0.0):
+
+        """
+        :param theta: angle of fast axis in rad
+        :param delta: phase difference in rad between the fast and slow axis
+        :return: Mueller matrix for a general liner polarizer (numpy.ndarray)
+                See: https://en.wikipedia.org/wiki/Mueller_calculus
+        """
+
+        # First row.
+        self.matrix[0, 0] = 1.0
+        self.matrix[0, 1] = 0.0
+        self.matrix[0, 2] = 0.0
+        self.matrix[0, 3] = 0.0
+
+        # Second row.    (np.cos(2*theta))**2  (np.sin(2*theta))**2 (np.cos(delta))**2 (np.sin(delta))**2
+        self.matrix[1, 0] = 0.0
+        self.matrix[1, 1] = (np.cos(2*theta))**2 + np.cos(delta) * (np.sin(2*theta))**2
+        self.matrix[1, 2] = np.cos(2*theta) * np.sin(2*theta) - np.cos(2*theta) * np.cos(delta) * np.sin(2*theta)
+        self.matrix[1, 3] = np.sin(2*theta) * np.sin(delta)
+
+        # Third row.
+        self.matrix[2, 0] = 0.0
+        self.matrix[2, 1] = np.cos(2*theta) * np.sin(2*theta) - np.cos(2*theta) * np.cos(delta) * np.sin(2*theta)
+        self.matrix[2, 2] = np.cos(delta) * (np.cos(2*theta))**2 + (np.sin(2*theta))**2
+        self.matrix[2, 3] = - np.cos(2*theta) * np.sin(delta)
+
+        # Fourth row.
+        self.matrix[3, 0] = 0.0
+        self.matrix[3, 1] = -np.sin(2*theta) * np.sin(delta)
+        self.matrix[3, 2] = np.cos(2*theta) * np.sin(delta)
+        self.matrix[3, 3] = np.cos(delta)
 
     def calculate_stokes_vector(self,incoming_stokes_vector):
         """

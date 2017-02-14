@@ -12,7 +12,7 @@ from crystalpy.util.PolarizedPhotonBunch import PolarizedPhoton
 from crystalpy.util.PolarizedPhotonBunch import PolarizedPhotonBunch
 
 
-class PhotonBunchTest(unittest.TestCase):
+class PolarizedPhotonBunchTest(unittest.TestCase):
     def testFromArray(self):
 
 
@@ -53,3 +53,5 @@ class PhotonBunchTest(unittest.TestCase):
         energies = photon_bunch.get_array("energies")
         for energy in energies:
             self.assertAlmostEqual(  energy, 3000.0)
+
+        print(photon_bunch.photon_bunch)

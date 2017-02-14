@@ -5,6 +5,8 @@ import unittest
 
 import numpy as np
 
+from numpy.testing import assert_array_almost_equal
+
 from crystalpy.polarization.MuellerMatrix import MuellerMatrix
 
 
@@ -112,3 +114,79 @@ class MuellerMatrixTest(unittest.TestCase):
         self.assertFalse(self.mueller_matrix != self.mueller_matrix)  # identity
         self.assertFalse(candidate1 != self.mueller_matrix)
         self.assertTrue(candidate2 != self.mueller_matrix)
+
+    def test_linear_polarizers(self):
+
+        #
+        assert_array_almost_equal( MuellerMatrix.initialize_as_linear_polarizer_horizontal().get_matrix(),
+                                   0.5 * np.array([
+                                                [1.0,1.0,0.0,0.0],
+                                                [1.0,1.0,0.0,0.0],
+                                                [0.0,0.0,0.0,0.0],
+                                                [0.0,0.0,0.0,0.0] ]))
+
+        #
+        assert_array_almost_equal( MuellerMatrix.initialize_as_linear_polarizer_horizontal().get_matrix(),
+                                   0.5 * np.array([
+                                                [1.0,1.0,0.0,0.0],
+                                                [1.0,1.0,0.0,0.0],
+                                                [0.0,0.0,0.0,0.0],
+                                                [0.0,0.0,0.0,0.0] ]))
+
+        #
+        assert_array_almost_equal( MuellerMatrix.initialize_as_linear_polarizer_vertical().get_matrix(),
+                                   0.5 * np.array([
+                                                [1.0,-1.0,0.0,0.0],
+                                                [-1.0,1.0,0.0,0.0],
+                                                [0.0,0.0,0.0,0.0],
+                                                [0.0,0.0,0.0,0.0] ]))
+
+
+        #
+        assert_array_almost_equal( MuellerMatrix.initialize_as_linear_polarizer_plus45().get_matrix(),
+                                   0.5 * np.array([
+                                                [1.0,0.0,1.0,0.0],
+                                                [0.0,0.0,0.0,0.0],
+                                                [1.0,0.0,1.0,0.0],
+                                                [0.0,0.0,0.0,0.0] ]))
+
+
+        #
+        assert_array_almost_equal( MuellerMatrix.initialize_as_linear_polarizer_minus45().get_matrix(),
+                                   0.5 * np.array([
+                                                [1.0,0.0,-1.0,0.0],
+                                                [0.0,0.0,0.0,0.0],
+                                                [-1.0,0.0,1.0,0.0],
+                                                [0.0,0.0,0.0,0.0] ]))
+
+    def test_linear_retarders(self):
+        #
+        assert_array_almost_equal( MuellerMatrix.initialize_as_quarter_wave_plate_fast_vertical().get_matrix(),
+                                   np.array([
+                                                [1.0,0.0,0.0,0.0],
+                                                [0.0,1.0,0.0,0.0],
+                                                [0.0,0.0,0.0,-1.0],
+                                                [0.0,0.0,1.0,0.0] ]))
+        #
+        assert_array_almost_equal( MuellerMatrix.initialize_as_quarter_wave_plate_fast_horizontal().get_matrix(),
+                                   np.array([
+                                                [1.0,0.0,0.0,0.0],
+                                                [0.0,1.0,0.0,0.0],
+                                                [0.0,0.0,0.0,1.0],
+                                                [0.0,0.0,-1.0,0.0] ]))
+        #
+        assert_array_almost_equal( MuellerMatrix.initialize_as_half_wave_plate().get_matrix(),
+                                   np.array([
+                                                [1.0,0.0,0.0,0.0],
+                                                [0.0,1.0,0.0,0.0],
+                                                [0.0,0.0,-1.0,0.0],
+                                                [0.0,0.0,0.0,-1.0] ]))
+    def test_filter(self):
+        #
+        assert_array_almost_equal( MuellerMatrix.initialize_as_filter(55.5).get_matrix(),
+                                   55.5*np.array([
+                                                [1.0,0.0,0.0,0.0],
+                                                [0.0,1.0,0.0,0.0],
+                                                [0.0,0.0,1.0,0.0],
+                                                [0.0,0.0,0.0,1.0] ]))
+

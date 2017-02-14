@@ -7,7 +7,7 @@ from math import atan2
 from crystalpy.util.Vector import Vector
 from crystalpy.util.Photon import Photon
 from crystalpy.util.StokesVector import StokesVector
-
+from crystalpy.polarization.MuellerMatrix import MuellerMatrix
 
 class PolarizedPhoton(Photon):
     """
@@ -50,6 +50,15 @@ class PolarizedPhoton(Photon):
         :return: Stokes vector.
         """
         return self._stokes_vector
+
+    def setStokesVector(self,stokes_vector):
+        self._stokes_vector = stokes_vector
+
+    def applyMuellerMatrix(self,mueller_matrix=MuellerMatrix()):
+        s_in = self.stokesVector()
+        s_out = mueller_matrix.calculate_stokes_vector( s_in )
+        self.setStokesVector(s_out)
+
 
     def polarizationDegree(self):
         """

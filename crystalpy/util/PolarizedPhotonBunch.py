@@ -58,6 +58,7 @@ class PolarizedPhotonBunch(object):
         energies = np.zeros(len(self))
         deviations = np.zeros(len(self))
         stokes = np.zeros([4, len(self)])
+        directions = np.zeros([3, len(self)])
         polarization_degrees = np.zeros(len(self))
         i = 0
 
@@ -68,6 +69,9 @@ class PolarizedPhotonBunch(object):
             stokes[1, i] = polarized_photon.stokesVector().s1
             stokes[2, i] = polarized_photon.stokesVector().s2
             stokes[3, i] = polarized_photon.stokesVector().s3
+            directions[0, i] = polarized_photon.unitDirectionVector().components()[0]
+            directions[1, i] = polarized_photon.unitDirectionVector().components()[1]
+            directions[2, i] = polarized_photon.unitDirectionVector().components()[2]
             polarization_degrees[i] = polarized_photon.polarizationDegree()
             i += 1
 
@@ -78,6 +82,9 @@ class PolarizedPhotonBunch(object):
         self.array_dict["s1"] = stokes[1, :]
         self.array_dict["s2"] = stokes[2, :]
         self.array_dict["s3"] = stokes[3, :]
+        self.array_dict["vx"] = directions[0, :]
+        self.array_dict["vy"] = directions[1, :]
+        self.array_dict["vz"] = directions[2, :]
         self.array_dict["polarization degree"] = polarization_degrees
 
 

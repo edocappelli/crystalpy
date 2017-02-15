@@ -60,7 +60,7 @@ class MuellerDiffraction(object):
                                                     intensity_pi, phase_pi,
                                                     self._inclination_angle)
 
-            mueller_result.addPhotons(energy, deviation, crystal_phase_plate.calculate_stokes_vector(self._incoming_stokes_vector) )
+            mueller_result.add(energy, deviation, crystal_phase_plate.calculate_stokes_vector(self._incoming_stokes_vector) )
 
     def calculate_stokes(self):
         """

@@ -79,7 +79,7 @@ class StokesVector(object):
 
     #TODO rename to circular_polarization_degree
     # def polarization_degree(self):
-    def circuarPolarizationDegree(self):
+    def circularPolarizationDegree(self):
         """
         Calculates the degree of circular polarization of the radiation
         described by the Stokes parameter.

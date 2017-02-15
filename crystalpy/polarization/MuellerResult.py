@@ -170,4 +170,4 @@ class MuellerResult(object):
         self._s1[energy_index, deviation_index] = stokes_vector.s1
         self._s2[energy_index, deviation_index] = stokes_vector.s2
         self._s3[energy_index, deviation_index] = stokes_vector.s3
-        self._polarization_degree[energy_index, deviation_index] = stokes_vector.polarization_degree()
+        self._polarization_degree[energy_index, deviation_index] = stokes_vector.circularPolarizationDegree()

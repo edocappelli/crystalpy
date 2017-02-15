@@ -68,6 +68,7 @@ class Photon(object):
         """
         self._unit_direction_vector = vector.getNormalizedVector()
 
+
     def deviation(self):
         """
         the deviations are calculated supposing that the bunch moves along the y axis

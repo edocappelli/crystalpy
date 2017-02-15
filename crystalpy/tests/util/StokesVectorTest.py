@@ -36,7 +36,7 @@ class StokesVectorTest(unittest.TestCase):
         self.assertListEqual(array2, self.element_list)
 
     def testPolarizationDegree(self):
-        pol_deg = self.stokes_vector.circuarPolarizationDegree()
+        pol_deg = self.stokes_vector.circularPolarizationDegree()
         self.assertEqual(type(pol_deg), float)
         self.assertAlmostEqual(pol_deg, 0.7489560226111716)
 

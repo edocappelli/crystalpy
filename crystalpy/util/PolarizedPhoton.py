@@ -32,8 +32,8 @@ class PolarizedPhoton(Photon):
                                self._unit_direction_vector.duplicate(),
                                self._stokes_vector.duplicate())
 
-    # #TODO change to camelCase
-    # def set_unit_direction_vector(self, direction_vector):
+    # # #TODO move to Photon
+    # def setUnitDirectionVector(self, direction_vector):
     #     """
     #     :type direction_vector: Vector
     #     """
@@ -68,7 +68,7 @@ class PolarizedPhoton(Photon):
         """
         :return: degree of circular polarization.
         """
-        return self._stokes_vector.circuarPolarizationDegree()
+        return self._stokes_vector.circularPolarizationDegree()
 
     def __eq__(self, candidate):
         """

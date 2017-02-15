@@ -14,12 +14,15 @@ class PolarizedPhotonBunch(object):
     """
     is a collection of PolarizedPhoton objects, making up the photon beam.
     """
-    def __init__(self, polarized_photons=[]):
+    def __init__(self, polarized_photons=None):
         """
         :param polarized_photons: bunch of PolarizedPhoton objects.
         :type polarized_photons: list(PolarizedPhoton, PolarizedPhoton, ...)
         """
-        self.photon_bunch = polarized_photons
+        if polarized_photons == None:
+            self.photon_bunch = []
+        else:
+            self.photon_bunch = polarized_photons
         self._set_dict()
 
     def add(self, to_be_added):

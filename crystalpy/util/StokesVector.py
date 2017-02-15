@@ -64,7 +64,10 @@ class StokesVector(object):
         described by the Stokes parameter.
         :return: degree of circular polarization
         """
-        return self.s3 / self.s0
+        try:
+            return self.s3 / self.s0
+        except:
+            return 0.0
 
     def to_string(self):
         """

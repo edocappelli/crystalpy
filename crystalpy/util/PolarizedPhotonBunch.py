@@ -136,7 +136,9 @@ class PolarizedPhotonBunch(PhotonBunch):
         :return: string containing the parameters characterizing each photon in the bunch.
         """
         bunch_string = str()
-        for photon in self:
+
+        for i in range(self.getNumberOfPhotons()):
+            photon = self.getPhotonIndex(i)
             string_to_attach = str(photon.energy()) + " " + \
                                photon.unitDirectionVector().toString() + "\n"
             bunch_string += string_to_attach

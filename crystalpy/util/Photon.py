@@ -5,12 +5,14 @@ Except for energy all units are in SI. Energy is in eV.
 
 #TODO: extend to include electric field? Rename to scalar photon?
 
-import scipy.constants.codata
+from crystalpy.util.Vector import Vector
+import scipy.constants as codata
+import numpy
 
 
 class Photon(object):
 
-    def __init__(self, energy_in_ev, direction_vector):
+    def __init__(self, energy_in_ev=1000.0, direction_vector=Vector(0.0,1.0,0.0)):
         """
         Constructor.
         :param energy_in_ev: Photon energy in eV.
@@ -19,32 +21,34 @@ class Photon(object):
         self._energy_in_ev = float(energy_in_ev)
         self._unit_direction_vector = direction_vector.getNormalizedVector()
 
+
+
+    def duplicate(self):
+        return Photon( self.energy(), self.unitDirectionVector() )
+
     def energy(self):
         """
         :return: Energy in eV.
         """
         return self._energy_in_ev
 
+    def setEnergy(self,value):
+        self._energy_in_ev = value
+
     def wavelength(self):
         """
         :return: The photon wavelength in meter.
         """
-        codata = scipy.constants.codata.physical_constants
-        speed_of_light = codata["speed of light in vacuum"][0]
-        planck_constant = codata["Planck constant"][0]
-        elementary_charge = codata["elementary charge"][0]
-        E_in_Joule = self.energy() * elementary_charge
-
+        E_in_Joule = self.energy() * codata.e # elementary_charge
         # Wavelength in meter
-        wavelength = (speed_of_light * planck_constant / E_in_Joule)
-
+        wavelength = (codata.c * codata.h / E_in_Joule)
         return wavelength
 
     def wavenumber(self):
         """
         :return: Wavenumber in m^-1.
         """
-        return (2.0 * scipy.constants.codata.pi) / self.wavelength()
+        return (2.0 * numpy.pi) / self.wavelength()
 
     def wavevector(self):
         """
@@ -57,6 +61,21 @@ class Photon(object):
         :return: Photon direction.
         """
         return self._unit_direction_vector
+
+    def setUnitDirectionVector(self,vector=Vector(0,1,0)):
+        """
+        :return: Photon direction.
+        """
+        self._unit_direction_vector = vector.getNormalizedVector()
+
+    def deviation(self):
+        """
+        the deviations are calculated supposing that the bunch moves along the y axis
+        """
+        vector = self.unitDirectionVector().components()  # ndarray([x, y, z])
+        deviation = numpy.arctan2(vector[2], vector[1])
+
+        return deviation
 
     def __eq__(self, candidate):
         """

@@ -2,9 +2,7 @@
 Represents a Stokes vector.
 Except for energy all units are in SI. Energy is in eV.
 """
-from numpy import asarray
-
-# TODO change methods to camelCase
+import numpy
 
 class StokesVector(object):
 
@@ -21,10 +19,32 @@ class StokesVector(object):
         self.s3 = float(element_list[3])
 
     def duplicate(self):
-        return StokesVector(self.get_array())
+        return StokesVector(self.components())
 
     # TODO change toList, toArray
-    def get_array(self, numpy=True):
+
+    def components(self):
+        """
+        Generates a numpy 1x4 array from the Stokes vector components.
+        """
+
+        return numpy.array(self.getList())
+
+    def getS0(self):
+        return self.components()[0]
+
+    def getS1(self):
+        return self.components()[1]
+
+    def getS2(self):
+        return self.components()[2]
+
+    def getS3(self):
+        return self.components()[3]
+
+
+
+    def getList(self):
         """
         Generates a 1x4 array from the Stokes vector components.
         :param numpy: if True returns numpy.ndarray, if False returns list.
@@ -35,20 +55,20 @@ class StokesVector(object):
         result.append(self.s1)
         result.append(self.s2)
         result.append(self.s3)
-
-        if numpy:
-            return asarray(result)
-
+    #
+    #     if numpyarray:
+    #         return numpy.asarray(result)
+    #
         return result
 
-    def set_array(self, array):
+    def setFromArray(self, array):
 
         self.s0 = float(array[0])
         self.s1 = float(array[1])
         self.s2 = float(array[2])
         self.s3 = float(array[3])
 
-    def set_values(self, s0,s1,s2,s3):
+    def setFromValues(self, s0,s1,s2,s3):
 
         self.s0 = float(s0)
         self.s1 = float(s1)
@@ -58,7 +78,8 @@ class StokesVector(object):
 
 
     #TODO rename to circular_polarization_degree
-    def polarization_degree(self):
+    # def polarization_degree(self):
+    def circuarPolarizationDegree(self):
         """
         Calculates the degree of circular polarization of the radiation
         described by the Stokes parameter.
@@ -69,7 +90,7 @@ class StokesVector(object):
         except:
             return 0.0
 
-    def to_string(self):
+    def toString(self):
         """
         :return: a string object containing the four components of the Stokes vector.
         """

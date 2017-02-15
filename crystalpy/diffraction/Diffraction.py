@@ -353,7 +353,7 @@ class Diffraction(object):
                                                     stokes_vector=outgoing_stokes_vector)
 
         # Add result of current deviation.
-        outgoing_bunch.add(outgoing_polarized_photon)
+        outgoing_bunch.addPhotons(outgoing_polarized_photon)
 
         # Return diffraction results.
         return outgoing_bunch

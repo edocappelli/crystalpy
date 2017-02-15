@@ -236,7 +236,7 @@ class MuellerMatrix(object):
         :return: StokesVector object.
         """
         # incoming_stokes_vector = self.incoming_stokes_vector.get_array()  # Stokes vector.
-        element_list = self.matrix_by_vector(incoming_stokes_vector.get_array(), numpy=False)
+        element_list = self.matrix_by_vector(incoming_stokes_vector.getList())
         outgoing_stokes_vector = StokesVector(element_list)
 
         return outgoing_stokes_vector

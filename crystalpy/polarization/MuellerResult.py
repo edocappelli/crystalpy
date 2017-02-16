@@ -31,7 +31,7 @@ class MuellerResult(object):
                                 number_angles))
 
         # degree of circular polarization.
-        self._polarization_degree = numpy.zeros((number_energies,
+        self._circular_polarization_degree = numpy.zeros((number_energies,
                                                  number_angles))
 
     # TODO: not needed
@@ -111,7 +111,7 @@ class MuellerResult(object):
         :return: degree of circular polarization.
         """
         energy_index = self._energy_index(energy)
-        return self._polarization_degree[energy_index, :]
+        return self._circular_polarization_degree[energy_index, :]
 
     def s0_by_deviation(self, deviation):
         """
@@ -157,7 +157,7 @@ class MuellerResult(object):
         :return: degree of circular polarization.
         """
         deviation_index = self._deviation_index(deviation)
-        return self._polarization_degree[deviation_index, :]
+        return self._circular_polarization_degree[deviation_index, :]
 
     def add(self, energy, deviation, stokes_vector):
         """
@@ -170,4 +170,4 @@ class MuellerResult(object):
         self._s1[energy_index, deviation_index] = stokes_vector.s1
         self._s2[energy_index, deviation_index] = stokes_vector.s2
         self._s3[energy_index, deviation_index] = stokes_vector.s3
-        self._polarization_degree[energy_index, deviation_index] = stokes_vector.circularPolarizationDegree()
+        self._circular_polarization_degree[energy_index, deviation_index] = stokes_vector.circularPolarizationDegree()

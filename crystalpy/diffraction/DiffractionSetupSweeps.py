@@ -1,7 +1,8 @@
 """
 Represents a diffraction setup (from where it inherits) and includes a photon beam
+with scanning ephoton energy and deviation angle (scattering plane is YZ plane)
 
-Except for energy all units are in SI. Energy is in eV. Angles in radians.
+Units are in SI except for photon energy in eV. Angles in radians.
 
 """
 import numpy
@@ -9,7 +10,7 @@ import numpy
 from crystalpy.diffraction.DiffractionSetup import DiffractionSetup
 
 from crystalpy.util.Photon import Photon
-from crystalpy.util.Vector import Vector
+from crystalpy.util.PhotonBunch import PhotonBunch
 
 
 class DiffractionSetupSweeps(DiffractionSetup):
@@ -78,12 +79,13 @@ class DiffractionSetupSweeps(DiffractionSetup):
 
 
         # Create photons according to sweeps.
-        photons = list()
+        photons = PhotonBunch() # list()
         for energy in energies:
             for deviation in deviations:
                 direction = info_setup.incomingPhotonDirection(energy, deviation)
                 incoming_photon = Photon(energy, direction)
-                photons.append(incoming_photon)
+                # photons.append(incoming_photon)
+                photons.addPhoton(incoming_photon)
 
         self._incoming_photons = photons
         # srio@esrf.eu: in theory, not needed as this info is in _incoming_photons
@@ -104,14 +106,6 @@ class DiffractionSetupSweeps(DiffractionSetup):
         """
         info_dict = DiffractionSetup.asInfoDictionary(self)
 
-        # info_dict["Geometry Type"] = self.geometryType().description()
-        # info_dict["Crystal Name"] = self.crystalName()
-        # info_dict["Thickness"] = str(self.thickness())
-        # info_dict["Miller indices (h,k,l)"] = "(%i,%i,%i)" % (self.millerH(),
-        #                                                       self.millerK(),
-        #                                                       self.millerL())
-        # info_dict["Asymmetry Angle"] = str(self.asymmetryAngle())
-        # info_dict["Azimuthal Angle"] = str(self.azimuthalAngle())
         info_dict["Minimum energy"] = str(self.energyMin())
         info_dict["Maximum energy"] = str(self.energyMax())
         info_dict["Number of energy points"] = str(self.energyPoints())
@@ -182,7 +176,8 @@ class DiffractionSetupSweeps(DiffractionSetup):
         Returns the incoming photons.
         :return: A list of photons.
         """
-        return self._incoming_photons
+        #TODO return the PhotonBunch object ?
+        return self._incoming_photons.getListOfPhotons()
 
     def energyMin(self):
         """
@@ -211,8 +206,7 @@ class DiffractionSetupSweeps(DiffractionSetup):
         :return: The angle deviations grid.
         """
         if self._energies is None:
-            self._energies = numpy.unique(numpy.array([photon.energy() for photon in self._incoming_photons]))
-        # self._energies = numpy.unique(numpy.array([photon.energy() for photon in self._incoming_photons]))
+            self._energies = numpy.unique(numpy.array([photon.energy() for photon in self._incoming_photons.getListOfPhotons()]))
 
         return self._energies
 
@@ -243,78 +237,8 @@ class DiffractionSetupSweeps(DiffractionSetup):
         :return: The angle deviations grid.
         """
         if self._deviations is None:
-            self._deviations = numpy.array([self.deviationOfIncomingPhoton(photon) for photon in self._incoming_photons])
+            self._deviations = numpy.array([self.deviationOfIncomingPhoton(photon) for photon in self._incoming_photons.getListOfPhotons()])
 
-        #
-        # self._deviations = numpy.array([self.deviationOfIncomingPhoton(photon) for photon in self._incoming_photons])
 
         return self._deviations
 
-    # TODO move outside?
-    def deviationOfIncomingPhoton(self, photon_in):
-        """
-        Given an incoming photon its deviation from the Bragg angle is returned.
-        :param photon_in: Incoming photon.
-        :return: Deviation from Bragg angle.
-        """
-        # this holds for every incoming photon-surface normal plane.
-        total_angle = photon_in.unitDirectionVector().angle(self.normalBragg())
-
-        energy = photon_in.energy()
-        angle_bragg = self.angleBragg(energy)
-
-        deviation = total_angle - angle_bragg - numpy.pi / 2
-        return deviation
-
-
-
-    def __eq__(self, candidate):
-        """
-        Determines if two setups are equal.
-        :param candidate: Instance to compare to.
-        :return: True if the two instances are equal. False otherwise.
-        """
-        if self._geometry_type != candidate.geometryType():
-            return False
-
-        if self._crystal_name != candidate.crystalName():
-            return False
-
-        if self._thickness != candidate.thickness():
-            return False
-
-        if self._miller_h != candidate.millerH():
-            return False
-
-        if self._miller_k != candidate.millerK():
-            return False
-
-        if self._miller_l != candidate.millerL():
-            return False
-
-        if self._asymmetry_angle != candidate.asymmetryAngle():
-            return False
-
-        if self._azimuthal_angle != candidate.azimuthalAngle():
-            return False
-
-        if self.energyMin() != candidate.energyMin():
-            return False
-
-        if self.energyMax() != candidate.energyMax():
-            return False
-
-        if self.energyPoints() != candidate.energyPoints():
-            return False
-
-        if self.angleDeviationMin() != candidate.angleDeviationMin():
-            return False
-
-        if self.angleDeviationMax() != candidate.angleDeviationMax():
-            return False
-
-        if self.angleDeviationPoints() != candidate.angleDeviationPoints():
-            return False
-
-        # All members are equal so are the instances.
-        return True

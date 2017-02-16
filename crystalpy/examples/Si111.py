@@ -1,9 +1,20 @@
 from crystalpy.diffraction.GeometryType import BraggDiffraction
+from crystalpy.diffraction.DiffractionSetup import DiffractionSetup
 from crystalpy.diffraction.DiffractionSetupSweeps import DiffractionSetupSweeps
 from crystalpy.diffraction.Diffraction import Diffraction
 
 from crystalpy.polarization.MuellerDiffraction import MuellerDiffraction
 from crystalpy.util.StokesVector import StokesVector
+
+from crystalpy.util.Vector import Vector
+from crystalpy.util.Photon import Photon
+from crystalpy.util.PolarizedPhoton import PolarizedPhoton
+from crystalpy.util.PolarizedPhotonBunch import PolarizedPhotonBunch
+
+
+import numpy
+from srxraylib.plot.gol import plot
+
 
 
 def calculate_standard_interface():
@@ -95,9 +106,142 @@ def make_plots(mueller_result):
     plot(1e6*deviation_angles,mueller_result._s3[0]/mueller_result._s0[0],yrange=[-1,1],
          title="Circular Polarization S3/S0",xtitle="Deviation angle [urad]",ytitle="S3/S0",show=True)
 
+#
+#
+#
+def calculate_polarized_diffraction(method=0):
 
+    # Create a diffraction setup.
+
+    print("\nCreating a diffraction setup...")
+    diffraction_setup = DiffractionSetup(geometry_type          = BraggDiffraction(),  # GeometryType object
+                                               crystal_name           = "Si",                             # string
+                                               thickness              = 1e-2
+
+
+
+                                               ,                             # meters
+                                               miller_h               = 1,                                # int
+                                               miller_k               = 1,                                # int
+                                               miller_l               = 1,                                # int
+                                               asymmetry_angle        = 0,#10.0*numpy.pi/180.,                              # radians
+                                               azimuthal_angle        = 0.0)                              # radians                            # int
+
+
+    energy                 = 8000.0                           # eV
+    angle_deviation_min    = -100e-6                          # radians
+    angle_deviation_max    = 100e-6                           # radians
+    angle_deviation_points = 500
+
+    angle_step = (angle_deviation_max-angle_deviation_min)/angle_deviation_points
+
+    bunch_in = PolarizedPhotonBunch()
+
+    bragg_angle = diffraction_setup.angleBragg(energy)
+
+    print("Bragg angle for E=%f eV is %f deg"%(energy,bragg_angle*180.0/numpy.pi))
+
+
+
+    # Create a Diffraction object.
+    diffraction = Diffraction()
+
+    # method = 0 # diffraction for individual photons
+    # method = 1 # diffraction for bunch
+    ZZ = numpy.zeros(angle_deviation_points)
+
+    if method == 0:
+        bunch_out = PolarizedPhotonBunch()
+
+        for ia in range(angle_deviation_points):
+            angle = angle_deviation_min + ia * angle_step + bragg_angle
+            yy = numpy.cos(angle)
+            zz = - numpy.abs(numpy.sin(angle))
+            photon = PolarizedPhoton(energy_in_ev=energy,direction_vector=Vector(0.0,yy,zz),
+                                     stokes_vector=StokesVector([1,0,1,0]))
+            photon_out = diffraction.calculateDiffractedPolarizedPhoton(diffraction_setup,
+                                                                        incoming_polarized_photon=photon,
+                                                                        inclination_angle=0.0)
+            bunch_out.addPhoton( photon_out )
+            ZZ[ia] = angle_deviation_min + ia * angle_step
+
+
+
+    elif method == 1: # diffraction for bunch
+        for ia in range(angle_deviation_points):
+            angle = angle_deviation_min + ia * angle_step + bragg_angle
+            yy = numpy.cos(angle)
+            zz = - numpy.abs(numpy.sin(angle))
+            photon = PolarizedPhoton(energy_in_ev=energy,direction_vector=Vector(0.0,yy,zz),
+                                     stokes_vector=StokesVector([1,0,1,0]))
+            bunch_in.addPhoton( photon )
+            ZZ[ia] = angle_deviation_min + ia * angle_step
+
+        bunch_out = diffraction.calculateDiffractedPolarizedPhotonBunch(diffraction_setup,bunch_in,0.0)
+
+
+    bunch_out_dict = bunch_out.toDictionary()
+
+    #TODO check deviations.... look weird
+    plot(1e6*bunch_out_dict["deviations"],bunch_out_dict["s0"],xtitle="theta - thetaB [urad]",
+                                        title="Polarized S0 reflectivity calculation using method %d"%method)
+
+    plot(bunch_out_dict["deviations"],ZZ)
+
+def calculate_simple_diffraction():
+
+    # Create a diffraction setup.
+
+    print("\nCreating a diffraction setup...")
+    diffraction_setup = DiffractionSetup(geometry_type          = BraggDiffraction(),  # GeometryType object
+                                               crystal_name           = "Si",                             # string
+                                               thickness              = 1e-2
+
+
+
+                                               ,                             # meters
+                                               miller_h               = 1,                                # int
+                                               miller_k               = 1,                                # int
+                                               miller_l               = 1,                                # int
+                                               asymmetry_angle        = 0,#10.0*numpy.pi/180.,                              # radians
+                                               azimuthal_angle        = 0.0)                              # radians                            # int
+
+
+    energy                 = 8000.0                           # eV
+    angle_deviation_min    = -100e-6                          # radians
+    angle_deviation_max    = 100e-6                           # radians
+    angle_deviation_points = 500
+
+    angle_step = (angle_deviation_max-angle_deviation_min)/angle_deviation_points
+
+    bragg_angle = diffraction_setup.angleBragg(energy)
+
+    print("Bragg angle for E=%f eV is %f deg"%(energy,bragg_angle*180.0/numpy.pi))
+
+
+    # Create a Diffraction object.
+    diffraction = Diffraction()
+
+    deviations = numpy.zeros(angle_deviation_points)
+    intensityS = numpy.zeros(angle_deviation_points)
+
+    for ia in range(angle_deviation_points):
+        deviation = angle_deviation_min + ia * angle_step
+        angle = deviation  + bragg_angle
+        yy = numpy.cos(angle)
+        zz = - numpy.abs(numpy.sin(angle))
+        photon = Photon(energy_in_ev=energy,direction_vector=Vector(0.0,yy,zz))
+
+        coeffs = diffraction.calculateDiffractedComplexAmplitudes(diffraction_setup,photon)
+        deviations[ia] = deviation
+        intensityS[ia] = coeffs['S'].intensity()
+
+    from srxraylib.plot.gol import plot
+    plot(1e6*deviations,intensityS,xtitle="theta - thetaB [urad]",title="Simple reflectivity calculation")
 
 
 if __name__ == "__main__":
-    mueller_result = calculate_standard_interface()
-    make_plots(mueller_result)
+    make_plots( calculate_standard_interface() )
+    calculate_polarized_diffraction(method=0)
+    calculate_polarized_diffraction(method=1)
+    calculate_simple_diffraction()

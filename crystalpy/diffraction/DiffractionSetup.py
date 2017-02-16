@@ -15,8 +15,8 @@ class DiffractionSetup(object):
     def __init__(self, geometry_type, crystal_name, thickness,
                  miller_h, miller_k, miller_l,
                  asymmetry_angle,
-                 azimuthal_angle,
-                 incoming_photons):
+                 azimuthal_angle,):
+                 # incoming_photons):
         """
         Constructor.
         :param geometry_type: GeometryType (BraggDiffraction,...).
@@ -49,18 +49,18 @@ class DiffractionSetup(object):
 
         # photons stuff
 
-        # TODO: the "incoming_photons" and all related methods must be moved outside??
-        # Set deviations and energies caches to None.
-        self._incoming_photons = incoming_photons
-        self._deviations = None
-        self._energies = None
+        # # TODO: the "incoming_photons" and all related methods must be moved outside??
+        # # Set deviations and energies caches to None.
+        # self._incoming_photons = incoming_photons
+        # self._deviations = None
+        # self._energies = None
 
-    def incomingPhotons(self):
-        """
-        Returns the incoming photons.
-        :return: A list of photons.
-        """
-        return self._incoming_photons
+    # def incomingPhotons(self):
+    #     """
+    #     Returns the incoming photons.
+    #     :return: A list of photons.
+    #     """
+    #     return self._incoming_photons
 
     def geometryType(self):
         """
@@ -118,67 +118,67 @@ class DiffractionSetup(object):
         """
         return self._azimuthal_angle
 
-    def energyMin(self):
-        """
-        Returns the minimum energy in eV.
-        :return: The minimum energy in eV.
-        """
-        return self.energies().min()
-
-    def energyMax(self):
-        """
-        Returns the maximum energy in eV.
-        :return: The maximum energy in eV.
-        """
-        return self.energies().max()
-
-    def energyPoints(self):
-        """
-        Returns the number of energy points.
-        :return: Number of energy points.
-        """
-        return self.energies().shape[0]
-
-    def energies(self):
-        """
-        Returns the energies of this setup.
-        :return: The angle deviations grid.
-        """
-        if self._energies is None:
-            self._energies = np.unique(np.array([photon.energy() for photon in self._incoming_photons]))
-
-        return self._energies
-
-    def angleDeviationMin(self):
-        """
-        Returns the minimal angle deviation.
-        :return: Minimal angle deviation.
-        """
-        return self.angleDeviationGrid().min()
-
-    def angleDeviationMax(self):
-        """
-        Returns the maximal angle deviation.
-        :return: Maximal angle deviation.
-        """
-        return self.angleDeviationGrid().max()
-
-    def angleDeviationPoints(self):
-        """
-        Returns the angle deviation points.
-        :return: Angle deviation points.
-        """
-        return self.angleDeviationGrid().shape[0]
-
-    def angleDeviationGrid(self):
-        """
-        Returns the grid of angle deviations according to this setup.
-        :return: The angle deviations grid.
-        """
-        if self._deviations is None:
-            self._deviations = np.array([self.deviationOfIncomingPhoton(photon) for photon in self._incoming_photons])
-
-        return self._deviations
+    # def energyMin(self):
+    #     """
+    #     Returns the minimum energy in eV.
+    #     :return: The minimum energy in eV.
+    #     """
+    #     return self.energies().min()
+    #
+    # def energyMax(self):
+    #     """
+    #     Returns the maximum energy in eV.
+    #     :return: The maximum energy in eV.
+    #     """
+    #     return self.energies().max()
+    #
+    # def energyPoints(self):
+    #     """
+    #     Returns the number of energy points.
+    #     :return: Number of energy points.
+    #     """
+    #     return self.energies().shape[0]
+    #
+    # def energies(self):
+    #     """
+    #     Returns the energies of this setup.
+    #     :return: The angle deviations grid.
+    #     """
+    #     if self._energies is None:
+    #         self._energies = np.unique(np.array([photon.energy() for photon in self._incoming_photons]))
+    #
+    #     return self._energies
+    #
+    # def angleDeviationMin(self):
+    #     """
+    #     Returns the minimal angle deviation.
+    #     :return: Minimal angle deviation.
+    #     """
+    #     return self.angleDeviationGrid().min()
+    #
+    # def angleDeviationMax(self):
+    #     """
+    #     Returns the maximal angle deviation.
+    #     :return: Maximal angle deviation.
+    #     """
+    #     return self.angleDeviationGrid().max()
+    #
+    # def angleDeviationPoints(self):
+    #     """
+    #     Returns the angle deviation points.
+    #     :return: Angle deviation points.
+    #     """
+    #     return self.angleDeviationGrid().shape[0]
+    #
+    # def angleDeviationGrid(self):
+    #     """
+    #     Returns the grid of angle deviations according to this setup.
+    #     :return: The angle deviations grid.
+    #     """
+    #     if self._deviations is None:
+    #         self._deviations = np.array([self.deviationOfIncomingPhoton(photon) for photon in self._incoming_photons])
+    #
+    #     return self._deviations
 
     def angleBragg(self, energy):
         """
@@ -282,6 +282,7 @@ class DiffractionSetup(object):
             return normal_bragg.getNormalizedVector()
         else:
             return normal_bragg
+
     def normalSurface(self):
         """
         Calculates surface normal n.
@@ -301,6 +302,45 @@ class DiffractionSetup(object):
 
         return normal_surface
 
+
+    def unitcellVolume(self):
+        """
+        Returns the unit cell volume.
+
+        :return: Unit cell volume
+        """
+        # Retrieve unit cell volume from xraylib.
+        unit_cell_volume = self._crystal['volume']
+
+        return unit_cell_volume
+
+
+    # TODO: rename toDictionary ??
+    def asInfoDictionary(self):
+        """
+        Returns this setup in InfoDictionary form.
+        :return: InfoDictionary form of this setup.
+        """
+        info_dict = OrderedDict()
+        info_dict["Geometry Type"] = self.geometryType().description()
+        info_dict["Crystal Name"] = self.crystalName()
+        info_dict["Thickness"] = str(self.thickness())
+        info_dict["Miller indices (h,k,l)"] = "(%i,%i,%i)" % (self.millerH(),
+                                                              self.millerK(),
+                                                              self.millerL())
+        info_dict["Asymmetry Angle"] = str(self.asymmetryAngle())
+        info_dict["Azimuthal Angle"] = str(self.azimuthalAngle())
+        # info_dict["Minimum energy"] = str(self.energyMin())
+        # info_dict["Maximum energy"] = str(self.energyMax())
+        # info_dict["Number of energy points"] = str(self.energyPoints())
+        # info_dict["Angle deviation minimum"] = "%.2e" % (self.angleDeviationMin())
+        # info_dict["Angle deviation maximum"] = "%.2e" % (self.angleDeviationMax())
+        # info_dict["Angle deviation points"] = str(self.angleDeviationPoints())
+
+        return info_dict
+
+
+    # TODO rename getK0?
     def incomingPhotonDirection(self, energy, deviation):
         """
         Calculates the direction of the incoming photon. Parallel to k_0.
@@ -334,55 +374,23 @@ class DiffractionSetup(object):
 
         return photon_direction
 
-    def deviationOfIncomingPhoton(self, photon_in):
-        """
-        Given an incoming photon its deviation from the Bragg angle is returned.
-        :param photon_in: Incoming photon.
-        :return: Deviation from Bragg angle.
-        """
-        # this holds for every incoming photon-surface normal plane.
-        total_angle = photon_in.unitDirectionVector().angle(self.normalBragg())
+    # # TODO move outside?
+    # def deviationOfIncomingPhoton(self, photon_in):
+    #     """
+    #     Given an incoming photon its deviation from the Bragg angle is returned.
+    #     :param photon_in: Incoming photon.
+    #     :return: Deviation from Bragg angle.
+    #     """
+    #     # this holds for every incoming photon-surface normal plane.
+    #     total_angle = photon_in.unitDirectionVector().angle(self.normalBragg())
+    #
+    #     energy = photon_in.energy()
+    #     angle_bragg = self.angleBragg(energy)
+    #
+    #     deviation = total_angle - angle_bragg - np.pi / 2
+    #     return deviation
 
-        energy = photon_in.energy()
-        angle_bragg = self.angleBragg(energy)
 
-        deviation = total_angle - angle_bragg - np.pi / 2
-        return deviation
-
-    def unitcellVolume(self):
-        """
-        Returns the unit cell volume.
-
-        :return: Unit cell volume
-        """
-        # Retrieve unit cell volume from xraylib.
-        unit_cell_volume = self._crystal['volume']
-
-        return unit_cell_volume
-
-    # TODO: rename toDictionary ??
-    def asInfoDictionary(self):
-        """
-        Returns this setup in InfoDictionary form.
-        :return: InfoDictionary form of this setup.
-        """
-        info_dict = OrderedDict()
-        info_dict["Geometry Type"] = self.geometryType().description()
-        info_dict["Crystal Name"] = self.crystalName()
-        info_dict["Thickness"] = str(self.thickness())
-        info_dict["Miller indices (h,k,l)"] = "(%i,%i,%i)" % (self.millerH(),
-                                                              self.millerK(),
-                                                              self.millerL())
-        info_dict["Asymmetry Angle"] = str(self.asymmetryAngle())
-        info_dict["Azimuthal Angle"] = str(self.azimuthalAngle())
-        info_dict["Minimum energy"] = str(self.energyMin())
-        info_dict["Maximum energy"] = str(self.energyMax())
-        info_dict["Number of energy points"] = str(self.energyPoints())
-        info_dict["Angle deviation minimum"] = "%.2e" % (self.angleDeviationMin())
-        info_dict["Angle deviation maximum"] = "%.2e" % (self.angleDeviationMax())
-        info_dict["Angle deviation points"] = str(self.angleDeviationPoints())
-
-        return info_dict
 
     def __eq__(self, candidate):
         """
@@ -414,23 +422,23 @@ class DiffractionSetup(object):
         if self._azimuthal_angle != candidate.azimuthalAngle():
             return False
 
-        if self.energyMin() != candidate.energyMin():
-            return False
-
-        if self.energyMax() != candidate.energyMax():
-            return False
-
-        if self.energyPoints() != candidate.energyPoints():
-            return False
-
-        if self.angleDeviationMin() != candidate.angleDeviationMin():
-            return False
-
-        if self.angleDeviationMax() != candidate.angleDeviationMax():
-            return False
-
-        if self.angleDeviationPoints() != candidate.angleDeviationPoints():
-            return False
+        # if self.energyMin() != candidate.energyMin():
+        #     return False
+        #
+        # if self.energyMax() != candidate.energyMax():
+        #     return False
+        #
+        # if self.energyPoints() != candidate.energyPoints():
+        #     return False
+        #
+        # if self.angleDeviationMin() != candidate.angleDeviationMin():
+        #     return False
+        #
+        # if self.angleDeviationMax() != candidate.angleDeviationMax():
+        #     return False
+        #
+        # if self.angleDeviationPoints() != candidate.angleDeviationPoints():
+        #     return False
 
         # All members are equal so are the instances.
         return True

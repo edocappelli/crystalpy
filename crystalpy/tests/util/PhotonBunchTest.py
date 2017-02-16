@@ -89,9 +89,9 @@ class PhotonBunchTest(unittest.TestCase):
 
         self.assertTrue( bunch.getNumberOfPhotons() == 4)
 
-        # bunch.addPhotons( bunch )
-        #
-        # self.assertTrue( bunch.getNumberOfPhotons() == 8)
+        bunch.addBunch( bunch )
+
+        self.assertTrue( bunch.getNumberOfPhotons() == 8)
 
 
     def testGetArrayByKey(self):

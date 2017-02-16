@@ -96,7 +96,7 @@ class PhotonBunch(object):
         self.polarized_photon_bunch.extend(to_be_added)
 
     def addBunch(self, to_be_added):
-        self.polarized_photon_bunch.extend(to_be_added)
+        self.polarized_photon_bunch.extend(to_be_added.getListOfPhotons())
 
     def getNumberOfPhotons(self):
         return len(self.polarized_photon_bunch)

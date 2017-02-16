@@ -4,23 +4,23 @@ This object is used as input to and output from the passive crystal widget.
 """
 import numpy as np
 
-from crystalpy.util.PolarizedPhoton import PolarizedPhoton
+from crystalpy.util.ComplexAmplitudePhoton import ComplexAmplitude
 from crystalpy.util.PhotonBunch import PhotonBunch
 
 
-class PolarizedPhotonBunch(PhotonBunch):
+class ComplexAmplitudePhotonBunch(PhotonBunch):
     """
-    is a collection of PolarizedPhoton objects, making up the photon beam.
+    is a collection of ComplexAmplitudePhoton objects, making up the photon beam.
     """
-    def __init__(self, polarized_photons=None):
+    def __init__(self, complex_amplitude_photons=None):
         """
         :param polarized_photons: bunch of PolarizedPhoton objects.
         :type polarized_photons: list(PolarizedPhoton, PolarizedPhoton, ...)
         """
-        if polarized_photons == None:
+        if complex_amplitude_photons == None:
             self.polarized_photon_bunch = []
         else:
-            self.polarized_photon_bunch = polarized_photons
+            self.polarized_photon_bunch = complex_amplitude_photons
 
 
     def toDictionary(self):
@@ -29,21 +29,23 @@ class PolarizedPhotonBunch(PhotonBunch):
         """
         array_dict = PhotonBunch.toDictionary(self)
 
-        stokes = np.zeros([4, len(self)])
-        polarization_degrees = np.zeros(len(self))
+        intensityS = np.zeros(len(self))
+        intensityP = np.zeros_like(intensityS)
+        phaseS     = np.zeros_like(intensityS)
+        phaseP     = np.zeros_like(intensityS)
+
 
         for i,polarized_photon in enumerate(self):
-            stokes[0, i] = polarized_photon.stokesVector().s0
-            stokes[1, i] = polarized_photon.stokesVector().s1
-            stokes[2, i] = polarized_photon.stokesVector().s2
-            stokes[3, i] = polarized_photon.stokesVector().s3
-            polarization_degrees[i] = polarized_photon.circularPolarizationDegree()
+            intensityS[i] = polarized_photon.getIntensityS()
+            intensityP[i] = polarized_photon.getIntensityP()
+            phaseS    [i] = polarized_photon.getPhaseS()
+            phaseP    [i] = polarized_photon.getPhaseP()
 
-        array_dict["s0"] = stokes[0, :]
-        array_dict["s1"] = stokes[1, :]
-        array_dict["s2"] = stokes[2, :]
-        array_dict["s3"] = stokes[3, :]
-        array_dict["polarization degree"] = polarization_degrees
+        array_dict["intensityS"] = intensityS
+        array_dict["intensityP"] = intensityP
+        array_dict["phaseS"] = phaseS
+        array_dict["phaseP"] = phaseP
+
 
         return array_dict
 

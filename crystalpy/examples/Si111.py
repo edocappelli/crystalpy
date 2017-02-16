@@ -11,6 +11,9 @@ from crystalpy.util.Photon import Photon
 from crystalpy.util.PolarizedPhoton import PolarizedPhoton
 from crystalpy.util.PolarizedPhotonBunch import PolarizedPhotonBunch
 
+from crystalpy.util.ComplexAmplitudePhoton import ComplexAmplitidePhoton
+from crystalpy.util.ComplexAmplitudePhotonBunch import ComplexAmplitudePhotonBunch
+
 
 import numpy
 from srxraylib.plot.gol import plot
@@ -109,7 +112,7 @@ def make_plots(mueller_result):
 #
 #
 #
-def calculate_polarized_diffraction(method=0):
+def calculate_with_polarized_photon(method=0):
 
     # Create a diffraction setup.
 
@@ -240,8 +243,83 @@ def calculate_simple_diffraction():
     plot(1e6*deviations,intensityS,xtitle="theta - thetaB [urad]",title="Simple reflectivity calculation")
 
 
+def calculate_with_complex_amplitude_photon(method=0):
+
+    # Create a diffraction setup.
+
+    print("\nCreating a diffraction setup...")
+    diffraction_setup = DiffractionSetup(geometry_type          = BraggDiffraction(),  # GeometryType object
+                                               crystal_name           = "Si",                             # string
+                                               thickness              = 1e-2,                             # meters
+                                               miller_h               = 1,                                # int
+                                               miller_k               = 1,                                # int
+                                               miller_l               = 1,                                # int
+                                               asymmetry_angle        = 0,#10.0*numpy.pi/180.,                              # radians
+                                               azimuthal_angle        = 0.0)                              # radians                            # int
+
+
+    energy                 = 8000.0                           # eV
+    angle_deviation_min    = -100e-6                          # radians
+    angle_deviation_max    = 100e-6                           # radians
+    angle_deviation_points = 500
+
+    angle_step = (angle_deviation_max-angle_deviation_min)/angle_deviation_points
+
+    bragg_angle = diffraction_setup.angleBragg(energy)
+
+    print("Bragg angle for E=%f eV is %f deg"%(energy,bragg_angle*180.0/numpy.pi))
+
+
+    # Create a Diffraction object.
+    diffraction = Diffraction()
+
+    # method = 0 # diffraction for individual photons
+    # method = 1 # diffraction for bunch
+    ZZ = numpy.zeros(angle_deviation_points)
+
+
+
+    if method == 0:
+        # deviations = numpy.zeros(angle_deviation_points)
+        intensityS = numpy.zeros(angle_deviation_points)
+        intensityP = numpy.zeros(angle_deviation_points)
+        bunch_out = ComplexAmplitudePhotonBunch()
+        for ia in range(angle_deviation_points):
+            deviation = angle_deviation_min + ia * angle_step
+            angle = deviation  + bragg_angle
+            yy = numpy.cos(angle)
+            zz = - numpy.abs(numpy.sin(angle))
+            photon = ComplexAmplitidePhoton(energy_in_ev=energy,direction_vector=Vector(0.0,yy,zz))
+
+            photon_out = diffraction.calculateDiffractedComplexAmplitudePhoton(diffraction_setup,photon)
+            bunch_out.addPhoton(photon_out)
+            ZZ[ia] = deviation
+            # intensityS[ia] = photon_out.getIntensityS()
+            # intensityP[ia] = photon_out.getIntensityP()
+    elif method == 1: # diffraction for bunch
+        bunch_in = ComplexAmplitudePhotonBunch()
+        for ia in range(angle_deviation_points):
+            angle = angle_deviation_min + ia * angle_step + bragg_angle
+            yy = numpy.cos(angle)
+            zz = - numpy.abs(numpy.sin(angle))
+            photon = ComplexAmplitidePhoton(energy_in_ev=energy,direction_vector=Vector(0.0,yy,zz))
+            bunch_in.addPhoton( photon )
+            ZZ[ia] = angle_deviation_min + ia * angle_step
+
+        bunch_out = diffraction.calculateDiffractedComplexAmplitudePhotonBunch(diffraction_setup,bunch_in)
+
+    bunch_out_dict = bunch_out.toDictionary()
+    print(bunch_out_dict.keys())
+
+    plot(1e6*ZZ,bunch_out_dict["intensityS"],1e6*ZZ,bunch_out_dict["intensityP"],
+         xtitle="theta - thetaB [urad]",title="Simple reflectivity calculation method:%d"%method,
+         legend=["Sigma","Pi"])
+
+
 if __name__ == "__main__":
-    make_plots( calculate_standard_interface() )
-    calculate_polarized_diffraction(method=0)
-    calculate_polarized_diffraction(method=1)
-    calculate_simple_diffraction()
+    # make_plots( calculate_standard_interface() )
+    # calculate_with_polarized_photon(method=0)
+    # calculate_with_polarized_photon(method=1)
+    # calculate_simple_diffraction()
+    # calculate_with_complex_amplitude_photon(method=0)
+    calculate_with_complex_amplitude_photon(method=1)

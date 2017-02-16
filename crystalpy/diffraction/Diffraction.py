@@ -16,6 +16,7 @@ from crystalpy.util.Photon import Photon
 from crystalpy.util.PolarizedPhoton import PolarizedPhoton
 from crystalpy.util.PhotonBunch import PhotonBunch
 from crystalpy.util.PolarizedPhotonBunch import PolarizedPhotonBunch
+from crystalpy.util.ComplexAmplitudePhotonBunch import ComplexAmplitudePhotonBunch
 
 
 from crystalpy.diffraction.DiffractionResult import DiffractionResult
@@ -432,3 +433,55 @@ class Diffraction(object):
         complex_amplitudes = perfect_crystal.calculateDiffraction(incoming_photon)
 
         return complex_amplitudes
+
+    #
+    # using ComplexAmplitudePhoton
+    def calculateDiffractedComplexAmplitudePhoton(self, diffraction_setup,photon):
+
+        # Get PerfectCrystal instance for the current photon.
+        perfect_crystal = self._perfectCrystalForPhoton(diffraction_setup, photon)
+
+        coeffs = self.calculateDiffractedComplexAmplitudes(diffraction_setup,photon)
+
+        # Calculate outgoing Photon.
+        outgoing_photon = perfect_crystal._calculatePhotonOut(photon)
+        # apply reflectivities
+        outgoing_photon.rescaleEsigma(coeffs["S"])
+        outgoing_photon.rescaleEpi(coeffs["P"])
+
+        return outgoing_photon
+
+    def calculateDiffractedComplexAmplitudePhotonBunch(self, diffraction_setup, incoming_bunch):
+        """
+        Calculates the diffraction/transmission given by the setup.
+        :param diffraction_setup: The diffraction setup.
+        :return: PhotonBunch object made up of diffracted/transmitted photons.
+        """
+        # Create PhotonBunch instance.
+        outgoing_bunch = ComplexAmplitudePhotonBunch([])
+
+        # Retrieve the photon bunch from the diffraction setup.
+        # incoming_bunch = diffraction_setup.incomingPhotons()
+
+        # Check that photon_bunch is indeed a PhotonBunch object.
+        if not isinstance(incoming_bunch, ComplexAmplitudePhotonBunch):
+            raise Exception("The incoming photon bunch must be a ComplexAmplitudePhotonBunch object!")
+
+        # Raise calculation start.
+        self._onCalculationStart()
+
+        for index, polarized_photon in enumerate(incoming_bunch):
+
+            # Raise OnProgress event if progressed by 10 percent.
+            self._onProgressEveryTenPercent(index, len(incoming_bunch))
+
+            outgoing_complex_amplitude_photon = self.calculateDiffractedComplexAmplitudePhoton(diffraction_setup,
+                                                                        polarized_photon)
+            # Add result of current deviation.
+            outgoing_bunch.addPhoton(outgoing_complex_amplitude_photon)
+
+        # Raise calculation end.
+        self._onCalculationEnd()
+
+        # Return diffraction results.
+        return outgoing_bunch

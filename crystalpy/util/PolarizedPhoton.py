@@ -83,6 +83,7 @@ class PolarizedPhoton(Photon):
 
         return False
 
+    # TODO not needed? inheritated?
     def __ne__(self, candidate):
         """
         Determines if two polarized photons are not identical (same energy, direction and polarization).

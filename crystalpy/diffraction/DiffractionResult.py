@@ -246,26 +246,3 @@ class DiffractionResult(object):
         self._phases[energy_index, deviation_index, self.INDEX_POLARIZATION_P] = p_complex_amplitude.phase()
         self._phases[energy_index, deviation_index, self.INDEX_DIFFERENCE_PS] = difference_complex_amplitude.phase()
 
-    # def _debugPlot(self):
-        # """
-        # Debug plot intensities.
-        # """
-        # x = [i * 1e+6 for i in self.angleDeviations()]
-        # plot(x, self.sIntensityByEnergy(), label="S polarization")
-        # plot(x, self.pIntensityByEnergy(), label="P polarization")
-        # plot(x, self.sPhase(), label="S polarization")
-        # plot(x, self.pPhase(), label="P polarization")
-        # show()
-        # return
-
-    # def _debugPrint(self):
-        # """
-        # Debug print of S and P intensities and phases.
-        # """
-        # S polarization.
-        # print("s_intensity="+str(self.sIntensityByEnergy()).replace("array(","").replace(") * dimensionless",""))
-        # print("s_phase="+str(self.sPhaseByEnergy()))
-
-        # P polarization.
-        # print("p_intensity="+str(self.pIntensityByEnergy()).replace("array(","").replace(") * dimensionless",""))
-        # print("p_phase="+str(self.pPhaseByEnergy()))

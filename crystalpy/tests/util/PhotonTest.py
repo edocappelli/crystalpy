@@ -9,6 +9,14 @@ from crystalpy.util.Vector import Vector
 
 
 class PhotonTest(unittest.TestCase):
+
+    def testConstructorByDefault(self):
+        photon = Photon()
+
+        self.assertIsInstance(photon, Photon)
+        self.assertEqual(photon.energy(), 1000.0)
+        self.assertTrue(photon.unitDirectionVector() == Vector(0.0, 1.0, 0.0))
+
     def testConstructor(self):
         photon = Photon(4000, Vector(0, 0, 1))
 
@@ -18,20 +26,21 @@ class PhotonTest(unittest.TestCase):
 
     def testEnergy(self):
         photon = Photon(4000, Vector(0, 0, 1))
-        self.assertEqual(photon.energy(), 4000)
+        photon.setEnergy(8000.0)
+        self.assertEqual(photon.energy(), 8000)
 
     def testWavelength(self):
         # Test data in eV : m.
-        test_data = {   3: 413.28 * 10e-9,
-                        4: 309.96 * 10e-9,
-                        8: 154.98 * 10e-9,
-                     5000: 2.4797 * 10e-10,
-                    10000: 1.2398 * 10e-10}
+        test_data = {   3: 413.28 * 1e-9,
+                        4: 309.96 * 1e-9,
+                        8: 154.98 * 1e-9,
+                     5000: 2.4797 * 1e-10,
+                    10000: 1.2398 * 1e-10}
 
         for energy, wavelength in test_data.items():
             photon = Photon(energy, Vector(0, 0, 1))
-            self.assertAlmostEqual(photon.wavelength(),
-                                   wavelength, places=2)
+            # print("Energy=%f, Wavelength=%f A (reference = %f A)"%(energy,1e10*photon.wavelength(),1e10*wavelength))
+            self.assertAlmostEqual(1e10*photon.wavelength(),1e10*wavelength,places=1)
 
     def testWavenumber(self):
         # Test data in eV : m^-1.
@@ -63,6 +72,12 @@ class PhotonTest(unittest.TestCase):
 
         self.assertTrue(photon.unitDirectionVector() == Vector(0, 0, 1))
 
+    def testSetUnitDirectionVector(self):
+        photon = Photon(4000, Vector(0, 0, 5))
+        photon.setUnitDirectionVector(Vector(1,2,3))
+
+        self.assertTrue(photon.unitDirectionVector() == Vector(1, 2, 3).getNormalizedVector())
+
     def testOperatorEqual(self):
         photon_one = Photon(4000, Vector(0, 0, 5))
         photon_two = Photon(4000, Vector(0, 1, 1))
@@ -82,3 +97,13 @@ class PhotonTest(unittest.TestCase):
         self.assertTrue(photon_one != photon_two)
         self.assertTrue(photon_one != photon_three)
         self.assertTrue(photon_two != photon_three)
+
+    def testDuplicate(self):
+        photon_one = Photon(4000, Vector(0, 0, 5))
+        photon_two = photon_one.duplicate()
+
+
+        self.assertTrue( photon_one == photon_two )
+
+        photon_one.setEnergy(1000.0)
+        self.assertFalse( photon_one == photon_two )

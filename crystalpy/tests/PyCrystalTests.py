@@ -19,6 +19,7 @@ from crystalpy.tests.util.StokesVectorTest import StokesVectorTest
 # util
 from crystalpy.tests.util.VectorTest import VectorTest
 from crystalpy.tests.util.PhotonTest import PhotonTest
+from crystalpy.tests.util.PhotonBunchTest import PhotonBunchTest
 
 from crystalpy.tests.util.PolarizedPhotonTest import PolarizedPhotonTest
 from crystalpy.tests.util.PolarizedPhotonBunchTest import PolarizedPhotonBunchTest
@@ -32,6 +33,7 @@ def suite():
         # tests by Mark Glass.
         unittest.makeSuite(VectorTest, 'test'),
         unittest.makeSuite(PhotonTest, 'test'),
+        unittest.makeSuite(PhotonBunchTest, 'test'),
 
         unittest.makeSuite(ComplexAmplitudeTest, 'test'),
         unittest.makeSuite(GeometryTypeTest, 'test'),
@@ -42,13 +44,15 @@ def suite():
         unittest.makeSuite(DiffractionResultTest, 'test'),
 
         # tests by Edoardo.
+
+        unittest.makeSuite(StokesVectorTest, "test"),
+        unittest.makeSuite(PolarizedPhotonTest, "test"),
+        unittest.makeSuite(PolarizedPhotonBunchTest, "test")   ,
         unittest.makeSuite(CrystalPhasePlateTest, "test"),
         unittest.makeSuite(MuellerDiffractionTest, "test"),
         unittest.makeSuite(MuellerMatrixTest, "test"),
         unittest.makeSuite(MuellerResultTest, "test"),
-        unittest.makeSuite(StokesVectorTest, "test"),
-        unittest.makeSuite(PolarizedPhotonTest, "test"),
-        unittest.makeSuite(PolarizedPhotonBunchTest, "test")
+
     )
     return unittest.TestSuite(suites)
 

@@ -20,7 +20,7 @@ class VectorTest(unittest.TestCase):
                                3)
 
     def testFromComponents(self):
-        vector = Vector.fromComponents(array([11, -2, 23]))
+        vector = Vector.initializeFromComponents(array([11, -2, 23]))
 
         self.assertAlmostEqual(vector.components()[0],
                                11)
@@ -40,6 +40,14 @@ class VectorTest(unittest.TestCase):
                                -4.0)
         self.assertAlmostEqual(vector.components()[2],
                                0.0)
+
+        self.assertAlmostEqual(vector.getX(),
+                               -3.0)
+        self.assertAlmostEqual(vector.getY(),
+                               -4.0)
+        self.assertAlmostEqual(vector.getZ(),
+                               0.0)
+
 
     def testComponents(self):
         vector = Vector(1, 2, 3)

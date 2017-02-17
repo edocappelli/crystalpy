@@ -1,11 +1,12 @@
 """
 Represents a diffraction setup.
-Except for energy all units are in SI. Energy is in eV.
+Except for energy all units are in SI.
 """
+
 from collections import OrderedDict
 from copy import deepcopy
-import numpy as np
 import xraylib
+import numpy
 
 from crystalpy.util.Vector import Vector
 
@@ -15,8 +16,7 @@ class DiffractionSetup(object):
     def __init__(self, geometry_type, crystal_name, thickness,
                  miller_h, miller_k, miller_l,
                  asymmetry_angle,
-                 azimuthal_angle,
-                 incoming_photons):
+                 azimuthal_angle,):
         """
         Constructor.
         :param geometry_type: GeometryType (BraggDiffraction,...).
@@ -28,7 +28,6 @@ class DiffractionSetup(object):
         :param asymmetry_angle: The asymmetry angle between surface normal and Bragg normal (radians).
         :param azimuthal_angle: The angle between the projection of the Bragg normal
                                 on the crystal surface plane and the x axis (radians).
-        :param incoming_photons: The incoming photons.
         """
         self._geometry_type = geometry_type
         self._crystal_name = crystal_name
@@ -47,20 +46,6 @@ class DiffractionSetup(object):
         # Load crystal from xraylib.
         self._crystal = xraylib.Crystal_GetCrystal(self.crystalName())
 
-        # photons stuff
-
-        # TODO: the "incoming_photons" and all related methods must be moved outside??
-        # Set deviations and energies caches to None.
-        self._incoming_photons = incoming_photons
-        self._deviations = None
-        self._energies = None
-
-    def incomingPhotons(self):
-        """
-        Returns the incoming photons.
-        :return: A list of photons.
-        """
-        return self._incoming_photons
 
     def geometryType(self):
         """
@@ -117,68 +102,6 @@ class DiffractionSetup(object):
         :return: Azimuthal angle.
         """
         return self._azimuthal_angle
-
-    def energyMin(self):
-        """
-        Returns the minimum energy in eV.
-        :return: The minimum energy in eV.
-        """
-        return self.energies().min()
-
-    def energyMax(self):
-        """
-        Returns the maximum energy in eV.
-        :return: The maximum energy in eV.
-        """
-        return self.energies().max()
-
-    def energyPoints(self):
-        """
-        Returns the number of energy points.
-        :return: Number of energy points.
-        """
-        return self.energies().shape[0]
-
-    def energies(self):
-        """
-        Returns the energies of this setup.
-        :return: The angle deviations grid.
-        """
-        if self._energies is None:
-            self._energies = np.unique(np.array([photon.energy() for photon in self._incoming_photons]))
-
-        return self._energies
-
-    def angleDeviationMin(self):
-        """
-        Returns the minimal angle deviation.
-        :return: Minimal angle deviation.
-        """
-        return self.angleDeviationGrid().min()
-
-    def angleDeviationMax(self):
-        """
-        Returns the maximal angle deviation.
-        :return: Maximal angle deviation.
-        """
-        return self.angleDeviationGrid().max()
-
-    def angleDeviationPoints(self):
-        """
-        Returns the angle deviation points.
-        :return: Angle deviation points.
-        """
-        return self.angleDeviationGrid().shape[0]
-
-    def angleDeviationGrid(self):
-        """
-        Returns the grid of angle deviations according to this setup.
-        :return: The angle deviations grid.
-        """
-        if self._deviations is None:
-            self._deviations = np.array([self.deviationOfIncomingPhoton(photon) for photon in self._incoming_photons])
-
-        return self._deviations
 
     def angleBragg(self, energy):
         """
@@ -259,6 +182,11 @@ class DiffractionSetup(object):
     def normalBragg(self,return_normalized=False):
         """
         Calculates the B_H vecor, normal on the reflection lattice plane, with modulus 2 pi / d_spacing .
+
+        normal to Bragg planes obtained by rotating vnor an angle equal to minuns asymmetry angle (-alphaXOP)
+        around X using rodrigues rotation (in the screw direction (cw) when looking in the axis direction),
+        and then an angle phi (azimuthal angle) around Z
+
         :param return_normalized: if True the returned vector is normalized.
         :return: B_H vector
         """
@@ -266,13 +194,14 @@ class DiffractionSetup(object):
         # M.Sanchez del Rio et al., J.Appl.Cryst.(2015). 48, 477-491.
 
 
-        g_modulus = 2.0 * np.pi / (self.dSpacing() * 1e-10)
+        g_modulus = 2.0 * numpy.pi / (self.dSpacing() * 1e-10)
         # Let's start from a vector parallel to the surface normal (z axis).
         temp_normal_bragg = Vector(0, 0, 1).scalarMultiplication(g_modulus)
 
         # Let's now rotate this vector of an angle alphaX around the y axis (according to the right-hand-rule).
         alpha_x = self.asymmetryAngle()
-        temp_normal_bragg = temp_normal_bragg.rotateAroundAxis(Vector(1, 0, 0), -alpha_x)
+        axis = self.parallelSurface().crossProduct(self.normalSurface())  # should be Vector(1, 0, 0)
+        temp_normal_bragg = temp_normal_bragg.rotateAroundAxis(axis, -alpha_x)
 
         # Let's now rotate this vector of an angle phi around the z axis (following the ISO standard 80000-2:2009).
         phi = self.azimuthalAngle()
@@ -282,72 +211,27 @@ class DiffractionSetup(object):
             return normal_bragg.getNormalizedVector()
         else:
             return normal_bragg
+
     def normalSurface(self):
         """
-        Calculates surface normal n.
-        asymmetry_angle: Asymmetry angle of the surface cut.
-        :return: Surface normal n.
+        Returns the normal to the surface. (0,0,1) by definition.
+        :return: Vector instance with Surface normal Vnor.
         """
         # Edoardo: I use the geometrical convention from
         # M.Sanchez del Rio et al., J.Appl.Cryst.(2015). 48, 477-491.
         normal_surface = Vector(0, 0, 1)
-
-        # Mark's version:
-        # asymmetry_angle = self.asymmetryAngle()
-
-        # normal_surface = Vector(np.sin(asymmetry_angle),
-                                # 0.0,
-                                # np.cos(asymmetry_angle))
-
         return normal_surface
 
-    def incomingPhotonDirection(self, energy, deviation):
+    def parallelSurface(self):
         """
-        Calculates the direction of the incoming photon. Parallel to k_0.
-        :param energy: Energy to calculate the Bragg angle for.
-        :param deviation: Deviation from the Bragg angle.
-        :return: Direction of the incoming photon.
+        Returns the direction parallel to the crystal surface. (0,1,0) by definition.
+        :return: Vector instance with Surface normal Vtan.
         """
         # Edoardo: I use the geometrical convention from
         # M.Sanchez del Rio et al., J.Appl.Cryst.(2015). 48, 477-491.
+        parallel_surface = Vector(0, 1, 0)
+        return parallel_surface
 
-
-        # TODO: vectorize this part as in https://github.com/srio/CRYSTAL/blob/master/crystal3.F90
-
-
-        # angle between the incoming photon direction and the surface normal (z axis).
-        # a positive deviation means the photon direction lies closer to the surface normal.
-        angle = np.pi / 2.0 - (self.angleBragg(energy) + self.asymmetryAngle() + deviation)
-
-        # the photon comes from left to right in the yz plane.
-        photon_direction = Vector(0,
-                                  np.sin(angle),
-                                  -np.cos(angle))
-
-        # Mark's version:
-        # angle = np.pi / 2.0 - (self.angleBragg(energy) + deviation)
-
-        # photon_direction = Vector(-np.sin(angle),
-                                  # 0,
-                                  # -np.cos(angle))
-        # TODO: it seems that we should apply the rotation azimuthal_angle
-
-        return photon_direction
-
-    def deviationOfIncomingPhoton(self, photon_in):
-        """
-        Given an incoming photon its deviation from the Bragg angle is returned.
-        :param photon_in: Incoming photon.
-        :return: Deviation from Bragg angle.
-        """
-        # this holds for every incoming photon-surface normal plane.
-        total_angle = photon_in.unitDirectionVector().angle(self.normalBragg())
-
-        energy = photon_in.energy()
-        angle_bragg = self.angleBragg(energy)
-
-        deviation = total_angle - angle_bragg - np.pi / 2
-        return deviation
 
     def unitcellVolume(self):
         """
@@ -360,8 +244,8 @@ class DiffractionSetup(object):
 
         return unit_cell_volume
 
-    # TODO: rename toDictionary ??
-    def asInfoDictionary(self):
+
+    def toDictionary(self):
         """
         Returns this setup in InfoDictionary form.
         :return: InfoDictionary form of this setup.
@@ -375,14 +259,45 @@ class DiffractionSetup(object):
                                                               self.millerL())
         info_dict["Asymmetry Angle"] = str(self.asymmetryAngle())
         info_dict["Azimuthal Angle"] = str(self.azimuthalAngle())
-        info_dict["Minimum energy"] = str(self.energyMin())
-        info_dict["Maximum energy"] = str(self.energyMax())
-        info_dict["Number of energy points"] = str(self.energyPoints())
-        info_dict["Angle deviation minimum"] = "%.2e" % (self.angleDeviationMin())
-        info_dict["Angle deviation maximum"] = "%.2e" % (self.angleDeviationMax())
-        info_dict["Angle deviation points"] = str(self.angleDeviationPoints())
 
         return info_dict
+
+
+
+    def getK0(self, energy):
+        return self.incomingPhotonDirection(energy,0.0)
+
+    def incomingPhotonDirection(self, energy, deviation):
+        """
+        Calculates the direction of the incoming photon. Parallel to k_0.
+        :param energy: Energy to calculate the Bragg angle for.
+        :param deviation: Deviation from the Bragg angle.
+        :return: Direction of the incoming photon.
+        """
+        # Edoardo: I use the geometrical convention from
+        # M.Sanchez del Rio et al., J.Appl.Cryst.(2015). 48, 477-491.
+
+        # # DONE: vectorize this part as in https://github.com/srio/CRYSTAL/blob/master/crystal3.F90
+        # # angle between the incoming photon direction and the surface normal (z axis).
+        # # a positive deviation means the photon direction lies closer to the surface normal.
+        # angle = numpy.pi / 2.0 - (self.angleBragg(energy) + self.asymmetryAngle() + deviation)
+        # # the photon comes from left to right in the yz plane.
+        # photon_direction_old = Vector(0,numpy.sin(angle),-numpy.cos(angle))
+
+
+        # Let's now rotate -BH of an angle (90-BraggAngle) around the x axis
+        minusBH = self.normalBragg().scalarMultiplication(-1.0)
+        minusBH = minusBH.getNormalizedVector()
+        axis = self.parallelSurface().crossProduct(self.normalSurface())  # should be Vector(1, 0, 0)
+        # TODO check why deviation has minus
+        photon_direction = minusBH.rotateAroundAxis(axis, (numpy.pi/2)-self.angleBragg(energy)-deviation)
+
+        # print("PHOTON DIRECTION ",photon_direction_old.components(),photon_direction.components())
+        # Let's now rotate this vector of an angle phi around the z axis (following the ISO standard 80000-2:2009).
+        # photon_direction = photon_direction.rotateAroundAxis(Vector(0, 0, 1), self.azimuthalAngle() )
+
+        return photon_direction
+
 
     def __eq__(self, candidate):
         """
@@ -414,24 +329,6 @@ class DiffractionSetup(object):
         if self._azimuthal_angle != candidate.azimuthalAngle():
             return False
 
-        if self.energyMin() != candidate.energyMin():
-            return False
-
-        if self.energyMax() != candidate.energyMax():
-            return False
-
-        if self.energyPoints() != candidate.energyPoints():
-            return False
-
-        if self.angleDeviationMin() != candidate.angleDeviationMin():
-            return False
-
-        if self.angleDeviationMax() != candidate.angleDeviationMax():
-            return False
-
-        if self.angleDeviationPoints() != candidate.angleDeviationPoints():
-            return False
-
         # All members are equal so are the instances.
         return True
 
@@ -449,3 +346,18 @@ class DiffractionSetup(object):
         :return: A copy of this instance.
         """
         return deepcopy(self)
+
+    def deviationOfIncomingPhoton(self, photon_in):
+        """
+        Given an incoming photon its deviation from the Bragg angle is returned.
+        :param photon_in: Incoming photon.
+        :return: Deviation from Bragg angle.
+        """
+        # this holds for every incoming photon-surface normal plane.
+        total_angle = photon_in.unitDirectionVector().angle(self.normalBragg())
+
+        energy = photon_in.energy()
+        angle_bragg = self.angleBragg(energy)
+
+        deviation = total_angle - angle_bragg - numpy.pi / 2
+        return deviation

@@ -9,37 +9,34 @@ from numpy.testing import assert_array_almost_equal
 from crystalpy.util.StokesVector import StokesVector
 
 
-def _generate_element_list():
-    element_list = [0.78177969457877930,
-                    0.22595711869558588,
-                    0.28797567756487550,
-                    0.58551861060989900]
-    return element_list
 
 
 class StokesVectorTest(unittest.TestCase):
     def setUp(self):
-        self.element_list = _generate_element_list()
+        self.element_list = [0.78177969457877930,
+                             0.22595711869558588,
+                             0.28797567756487550,
+                             0.58551861060989900]
         self.stokes_vector = StokesVector(self.element_list)
 
-    def test_constructor(self):
+    def testConstructor(self):
         self.assertIsInstance(self.stokes_vector, StokesVector)
         self.assertEqual(self.stokes_vector.s0, 0.78177969457877930)
         self.assertEqual(self.stokes_vector.s1, 0.22595711869558588)
         self.assertEqual(self.stokes_vector.s2, 0.28797567756487550)
         self.assertEqual(self.stokes_vector.s3, 0.58551861060989900)
 
-    def test_get_array(self):
-        array1 = self.stokes_vector.get_array(numpy=True)
-        array2 = self.stokes_vector.get_array(numpy=False)
+    def testGetArray(self):
+        array1 = self.stokes_vector.components()
+        array2 = self.stokes_vector.getList()
 
         self.assertEqual(type(array1), np.ndarray)
         self.assertEqual(type(array2), list)
         np.testing.assert_array_equal(array1, np.asarray(self.element_list))
         self.assertListEqual(array2, self.element_list)
 
-    def test_polarization_degree(self):
-        pol_deg = self.stokes_vector.polarization_degree()
+    def testPolarizationDegree(self):
+        pol_deg = self.stokes_vector.circularPolarizationDegree()
         self.assertEqual(type(pol_deg), float)
         self.assertAlmostEqual(pol_deg, 0.7489560226111716)
 
@@ -75,4 +72,8 @@ class StokesVectorTest(unittest.TestCase):
         v1 = StokesVector([1,2,3,4])
         v2 = v1.duplicate()
 
-        assert_array_almost_equal(v1.get_array(numpy=True),v2.get_array(numpy=True))
+        self.assertTrue(v1 == v2)
+
+        v1.setFromValues(0,2,3,4)
+
+        self.assertFalse(v1 == v2)

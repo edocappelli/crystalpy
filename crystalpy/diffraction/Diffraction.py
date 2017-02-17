@@ -13,11 +13,18 @@ from crystalpy.diffraction.DiffractionExceptions import ReflectionImpossibleExce
                                                                     StructureFactorF0isZeroException, StructureFactorFHisZeroException, \
                                                                     StructureFactorFHbarIsZeroException
 from crystalpy.util.Photon import Photon
-from crystalpy.util.PolarizedPhotonBunch import PolarizedPhotonBunch, PolarizedPhoton
+from crystalpy.util.PolarizedPhoton import PolarizedPhoton
+from crystalpy.util.ComplexAmplitudePhotonBunch import ComplexAmplitudePhotonBunch
+
+from crystalpy.util.PhotonBunch import PhotonBunch
+from crystalpy.util.PolarizedPhotonBunch import PolarizedPhotonBunch
+
+
 from crystalpy.diffraction.DiffractionResult import DiffractionResult
 from crystalpy.diffraction.PerfectCrystalDiffraction import PerfectCrystalDiffraction
 from crystalpy.polarization.CrystalPhasePlate import CrystalPhasePlate
 
+from crystalpy.diffraction.DiffractionSetupSweeps import DiffractionSetupSweeps
 
 class Diffraction(object):
     isDebug = False
@@ -210,6 +217,8 @@ class Diffraction(object):
         :return: DiffractionResult representing this setup.
         """
         # Get PerfectCrystal instance for the current energy.
+        if not isinstance(diffraction_setup,DiffractionSetupSweeps):
+            raise Exception("Inmut must be of type: DiffractionSetupSweeps")
         perfect_crystal = self._perfectCrystalForEnergy(diffraction_setup, energy)
 
         # Raise calculation start.
@@ -250,6 +259,10 @@ class Diffraction(object):
         :param diffraction_setup: The diffraction setup.
         :return: DiffractionResult representing this setup.
         """
+
+        if not isinstance(diffraction_setup,DiffractionSetupSweeps):
+            raise Exception("Input object must be of type DiffractionSetupSweeps")
+
         # Create DiffractionResult instance.
         result = DiffractionResult(diffraction_setup, 0.0)
 
@@ -258,6 +271,26 @@ class Diffraction(object):
 
         # Return diffraction results.
         return result
+
+    #TODO remove? where is used??
+
+    # def calculateDiffractionForPhotonBunch(self, diffraction_setup, photon_bunch):
+    #     """
+    #     Calculates the diffraction/transmission given by the setup.
+    #     :param diffraction_setup: The diffraction setup.
+    #     :return: DiffractionResult representing this setup.
+    #     """
+    #     if not isinstance(photon_bunch,PhotonBunch):
+    #         raise Exception("Input object must be of type PhotonBunch")
+    #
+    #     # Create DiffractionResult instance.
+    #     result = DiffractionResult(diffraction_setup, 0.0)
+    #
+    #     for energy in diffraction_setup.energies():
+    #         self._calculateDiffractionForEnergy(diffraction_setup, energy, result)
+    #
+    #     # Return diffraction results.
+    #     return result
 
 ##################################################################################################
 # FUNCTIONS ADAPTED TO WORK WITH GENERAL BUNCHES OF PHOTONS AND NOT WITH DIRECTION/ENERGY SWEEPS #
@@ -312,7 +345,7 @@ class Diffraction(object):
 
         return perfect_crystal
 
-    def _calculateDiffractionForPhoton(self, diffraction_setup, incoming_polarized_photon, inclination_angle, outgoing_bunch):
+    def calculateDiffractedPolarizedPhoton(self, diffraction_setup, incoming_polarized_photon, inclination_angle):
         """
         Calculates the diffraction/transmission given by the setup.
         :param diffraction_setup: The diffraction setup.
@@ -330,13 +363,13 @@ class Diffraction(object):
         # Calculate outgoing Photon.
         outgoing_photon = perfect_crystal._calculatePhotonOut(incoming_polarized_photon)
 
-        # Calculate intensities and phases.
+        # Calculate intensities and phases of the crystal  reflectivities or transmitivities
         intensity_pi = complex_amplitudes["P"].intensity()
         intensity_sigma = complex_amplitudes["S"].intensity()
         phase_pi = complex_amplitudes["P"].phase()
         phase_sigma = complex_amplitudes["S"].phase()
 
-        # Get a CrystalPhasePlate instance.
+        # Get a CrystalPhasePlate instance which contains the Mueller matrix
         phase_plate = CrystalPhasePlate( #incoming_stokes_vector=incoming_stokes_vector,
                                         intensity_sigma=intensity_sigma,
                                         phase_sigma=phase_sigma,
@@ -352,13 +385,10 @@ class Diffraction(object):
                                                     direction_vector=outgoing_photon.unitDirectionVector(),
                                                     stokes_vector=outgoing_stokes_vector)
 
-        # Add result of current deviation.
-        outgoing_bunch.add(outgoing_polarized_photon)
+        return outgoing_polarized_photon
 
-        # Return diffraction results.
-        return outgoing_bunch
 
-    def calculateDiffractedPhotonBunch(self, diffraction_setup, inclination_angle):
+    def calculateDiffractedPolarizedPhotonBunch(self, diffraction_setup, incoming_bunch, inclination_angle):
         """
         Calculates the diffraction/transmission given by the setup.
         :param diffraction_setup: The diffraction setup.
@@ -368,11 +398,11 @@ class Diffraction(object):
         outgoing_bunch = PolarizedPhotonBunch([])
 
         # Retrieve the photon bunch from the diffraction setup.
-        incoming_bunch = diffraction_setup.incomingPhotons()
+        # incoming_bunch = diffraction_setup.incomingPhotons()
 
         # Check that photon_bunch is indeed a PhotonBunch object.
         if not isinstance(incoming_bunch, PolarizedPhotonBunch):
-            raise Exception("the incomingPhoton method in the setup is not yielding a PhotonBunch object!")
+            raise Exception("The incoming photon bunch must be a PolarizedPhotonBunch object!")
 
         # Raise calculation start.
         self._onCalculationStart()
@@ -382,7 +412,71 @@ class Diffraction(object):
             # Raise OnProgress event if progressed by 10 percent.
             self._onProgressEveryTenPercent(index, len(incoming_bunch))
 
-            self._calculateDiffractionForPhoton(diffraction_setup, polarized_photon, inclination_angle, outgoing_bunch)
+            outgoing_polarized_photon = self.calculateDiffractedPolarizedPhoton(diffraction_setup, polarized_photon, inclination_angle)
+            # Add result of current deviation.
+            outgoing_bunch.addPhoton(outgoing_polarized_photon)
+
+        # Raise calculation end.
+        self._onCalculationEnd()
+
+        # Return diffraction results.
+        return outgoing_bunch
+
+    # calculate complex reflectivity and transmitivity
+    def calculateDiffractedComplexAmplitudes(self, diffraction_setup, incoming_photon):
+
+        # Get PerfectCrystal instance for the current photon.
+        perfect_crystal = self._perfectCrystalForPhoton(diffraction_setup, incoming_photon)
+
+        # Calculate diffraction for current incoming photon.
+        complex_amplitudes = perfect_crystal.calculateDiffraction(incoming_photon)
+
+        return complex_amplitudes
+
+    # using ComplexAmplitudePhoton
+    def calculateDiffractedComplexAmplitudePhoton(self, diffraction_setup,photon):
+
+        # Get PerfectCrystal instance for the current photon.
+        perfect_crystal = self._perfectCrystalForPhoton(diffraction_setup, photon)
+
+        coeffs = self.calculateDiffractedComplexAmplitudes(diffraction_setup,photon)
+
+        # Calculate outgoing Photon.
+        outgoing_photon = perfect_crystal._calculatePhotonOut(photon)
+        # apply reflectivities
+        outgoing_photon.rescaleEsigma(coeffs["S"])
+        outgoing_photon.rescaleEpi(coeffs["P"])
+
+        return outgoing_photon
+
+    def calculateDiffractedComplexAmplitudePhotonBunch(self, diffraction_setup, incoming_bunch):
+        """
+        Calculates the diffraction/transmission given by the setup.
+        :param diffraction_setup: The diffraction setup.
+        :return: PhotonBunch object made up of diffracted/transmitted photons.
+        """
+        # Create PhotonBunch instance.
+        outgoing_bunch = ComplexAmplitudePhotonBunch([])
+
+        # Retrieve the photon bunch from the diffraction setup.
+        # incoming_bunch = diffraction_setup.incomingPhotons()
+
+        # Check that photon_bunch is indeed a PhotonBunch object.
+        if not isinstance(incoming_bunch, ComplexAmplitudePhotonBunch):
+            raise Exception("The incoming photon bunch must be a ComplexAmplitudePhotonBunch object!")
+
+        # Raise calculation start.
+        self._onCalculationStart()
+
+        for index, polarized_photon in enumerate(incoming_bunch):
+
+            # Raise OnProgress event if progressed by 10 percent.
+            self._onProgressEveryTenPercent(index, len(incoming_bunch))
+
+            outgoing_complex_amplitude_photon = self.calculateDiffractedComplexAmplitudePhoton(diffraction_setup,
+                                                                        polarized_photon)
+            # Add result of current deviation.
+            outgoing_bunch.addPhoton(outgoing_complex_amplitude_photon)
 
         # Raise calculation end.
         self._onCalculationEnd()

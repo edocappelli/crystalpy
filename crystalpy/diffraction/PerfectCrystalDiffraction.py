@@ -284,7 +284,10 @@ class PerfectCrystalDiffraction(object):
         # Calculate the outgoing photon.
         k_out = k_out_parallel.addVector(k_out_normal)
 
-        photon_out = Photon(photon_in.energy(), k_out)
+        # changed by srio to work with any photon object
+        # photon_out = Photon(photon_in.energy(), k_out)
+        photon_out = photon_in.duplicate()
+        photon_out.setUnitDirectionVector(k_out)
 
         if self.isDebug:
             self.logDebug("surface normal" + str(self.surface_normal().components()))

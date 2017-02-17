@@ -2,9 +2,7 @@
 This object contains a list of PolarizedPhoton objects, characterized by energy, direction vector and Stokes vector.
 This object is used as input to and output from the passive crystal widget.
 """
-from math import atan2
 
-from crystalpy.util.Vector import Vector
 from crystalpy.util.Photon import Photon
 from crystalpy.util.StokesVector import StokesVector
 from crystalpy.polarization.MuellerMatrix import MuellerMatrix
@@ -34,22 +32,6 @@ class PolarizedPhoton(Photon):
                                self._unit_direction_vector.duplicate(),
                                self._stokes_vector.duplicate())
 
-    #TODO change to camelCase
-    def set_unit_direction_vector(self, direction_vector):
-        """
-        :type direction_vector: Vector
-        """
-        self._unit_direction_vector = direction_vector.getNormalizedVector()
-
-    def deviation(self):
-        """
-        the deviations are calculated supposing that the bunch moves along the y axis
-        and considering a clockwise rotation as a positive deviation.
-        """
-        vector = self.unitDirectionVector().components()  # ndarray([x, y, z])
-        deviation = atan2(vector[2], vector[1])
-
-        return deviation
 
     def stokesVector(self):
         """
@@ -66,11 +48,11 @@ class PolarizedPhoton(Photon):
         self.setStokesVector(s_out)
 
 
-    def polarizationDegree(self):
+    def circularPolarizationDegree(self):
         """
         :return: degree of circular polarization.
         """
-        return self._stokes_vector.polarization_degree()
+        return self._stokes_vector.circularPolarizationDegree()
 
     def __eq__(self, candidate):
         """
@@ -85,10 +67,11 @@ class PolarizedPhoton(Photon):
 
         return False
 
-    def __ne__(self, candidate):
-        """
-        Determines if two polarized photons are not identical (same energy, direction and polarization).
-        :param candidate: Polarized photon to compare with.
-        :return: True if not equal otherwise False.
-        """
-        return not (self == candidate)
+    # # TODO not needed? inheritated?
+    # def __ne__(self, candidate):
+    #     """
+    #     Determines if two polarized photons are not identical (same energy, direction and polarization).
+    #     :param candidate: Polarized photon to compare with.
+    #     :return: True if not equal otherwise False.
+    #     """
+    #     return not (self == candidate)

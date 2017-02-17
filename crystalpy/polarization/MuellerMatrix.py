@@ -2,14 +2,14 @@
 Represents a Mueller matrix.
 See, e.g., https://en.wikipedia.org/wiki/Mueller_calculus
 """
-import numpy as np
+import numpy
 
 from crystalpy.util.StokesVector import StokesVector
 
 
 class MuellerMatrix(object):
 
-    def __init__(self, matrix=np.zeros((4,4)) ):
+    def __init__(self, matrix=numpy.zeros((4,4)) ):
         """
         Constructor.
         :param matrix: Matrix as a numpy.ndarray object.
@@ -28,15 +28,15 @@ class MuellerMatrix(object):
 
     @classmethod
     def initialize_as_linear_polarizer_vertical(cls):
-        return cls.initialize_as_general_linear_polarizer(np.pi/2)
+        return cls.initialize_as_general_linear_polarizer(numpy.pi/2)
 
     @classmethod
     def initialize_as_linear_polarizer_plus45(cls):
-        return cls.initialize_as_general_linear_polarizer(np.pi/4)
+        return cls.initialize_as_general_linear_polarizer(numpy.pi/4)
 
     @classmethod
     def initialize_as_linear_polarizer_minus45(cls):
-        return cls.initialize_as_general_linear_polarizer(-np.pi/4)
+        return cls.initialize_as_general_linear_polarizer(-numpy.pi/4)
 
     @classmethod
     def initialize_as_general_linear_retarder(cls,theta=0.0, delta=0.0):
@@ -46,19 +46,19 @@ class MuellerMatrix(object):
 
     @classmethod
     def initialize_as_quarter_wave_plate_fast_vertical(cls):
-        return cls.initialize_as_general_linear_retarder(np.pi/2,-np.pi/2)
+        return cls.initialize_as_general_linear_retarder(numpy.pi/2,-numpy.pi/2)
 
     @classmethod
     def initialize_as_quarter_wave_plate_fast_horizontal(cls):
-        return cls.initialize_as_general_linear_retarder(0.0,-np.pi/2)
+        return cls.initialize_as_general_linear_retarder(0.0,-numpy.pi/2)
 
     @classmethod
     def initialize_as_half_wave_plate(cls):
-        return cls.initialize_as_general_linear_retarder(0.0,np.pi)
+        return cls.initialize_as_general_linear_retarder(0.0,numpy.pi)
 
     @classmethod
     def initialize_as_ideal_mirror(cls):
-        return cls.initialize_as_general_linear_retarder(0.0,np.pi)
+        return cls.initialize_as_general_linear_retarder(0.0,numpy.pi)
 
     @classmethod
     def initialize_as_filter(cls,transmission=1.0):
@@ -72,7 +72,7 @@ class MuellerMatrix(object):
         :param numpy: if True returns numpy.ndarray, if False returns list.
         :return: [m00, m01, m02....mN0, mN1, mN2...]
         """
-        matrix = np.asarray(self.matrix)
+        matrix = numpy.asarray(self.matrix)
         result = matrix.flatten()
 
         if numpy:
@@ -93,17 +93,17 @@ class MuellerMatrix(object):
 
         return MuellerMatrix(new_mueller_matrix)
 
-    def matrix_by_vector(self, vector, numpy=True):
+    def matrix_by_vector(self, vector, return_numpy=True):
         """
         Multiplies the matrix by a vector.
         :param numpy: if True returns numpy.ndarray, if False returns list.
         :param vector: the vector factor.
         :return: matrix * vector (not a MuellerMatrix object).
         """
-        matrix = np.asarray(self.matrix)
-        result = np.dot(matrix, vector)
+        matrix = numpy.asarray(self.matrix)
+        result = numpy.dot(matrix, vector)
 
-        if numpy:
+        if return_numpy:
             return result
 
         return list(result)
@@ -115,8 +115,8 @@ class MuellerMatrix(object):
         :param vector: the vector factor.
         :return: matrix * vector (not a MuellerMatrix object).
         """
-        matrix = np.asarray(self.matrix)
-        result = np.dot(vector, matrix)
+        matrix = numpy.asarray(self.matrix)
+        result = numpy.dot(vector, matrix)
 
         if numpy:
             return result
@@ -134,10 +134,10 @@ class MuellerMatrix(object):
         matrix_1 = self.matrix
 
         if mod:
-            product = np.dot(matrix_1, matrix_2)
+            product = numpy.dot(matrix_1, matrix_2)
 
         else:
-            product = np.dot(matrix_2, matrix_1)
+            product = numpy.dot(matrix_2, matrix_1)
 
         return MuellerMatrix(product)
 
@@ -173,20 +173,20 @@ class MuellerMatrix(object):
 
         # First row.
         self.matrix[0, 0] = 0.5
-        self.matrix[0, 1] = 0.5 * np.cos(2*theta)
-        self.matrix[0, 2] = 0.5 * np.sin(2*theta)
+        self.matrix[0, 1] = 0.5 * numpy.cos(2*theta)
+        self.matrix[0, 2] = 0.5 * numpy.sin(2*theta)
         self.matrix[0, 3] = 0.0
 
         # Second row.
-        self.matrix[1, 0] = 0.5  * np.cos(2*theta)
-        self.matrix[1, 1] = 0.5  * (np.cos(2*theta))**2
-        self.matrix[1, 2] = 0.5  * np.sin(2*theta) * np.cos(2*theta)
+        self.matrix[1, 0] = 0.5  * numpy.cos(2*theta)
+        self.matrix[1, 1] = 0.5  * (numpy.cos(2*theta))**2
+        self.matrix[1, 2] = 0.5  * numpy.sin(2*theta) * numpy.cos(2*theta)
         self.matrix[1, 3] = 0.0
 
         # Third row.
-        self.matrix[2, 0] = 0.5 * np.sin(2*theta)
-        self.matrix[2, 1] = 0.5 * np.sin(2*theta) * np.cos(2*theta)
-        self.matrix[2, 2] = 0.5 * (np.sin(2*theta))**2
+        self.matrix[2, 0] = 0.5 * numpy.sin(2*theta)
+        self.matrix[2, 1] = 0.5 * numpy.sin(2*theta) * np.cos(2*theta)
+        self.matrix[2, 2] = 0.5 * (numpy.sin(2*theta))**2
         self.matrix[2, 3] = 0.0
 
         # Fourth row.
@@ -211,23 +211,23 @@ class MuellerMatrix(object):
         self.matrix[0, 2] = 0.0
         self.matrix[0, 3] = 0.0
 
-        # Second row.    (np.cos(2*theta))**2  (np.sin(2*theta))**2 (np.cos(delta))**2 (np.sin(delta))**2
+        # Second row.    (numpy.cos(2*theta))**2  (numpy.sin(2*theta))**2 (numpy.cos(delta))**2 (numpy.sin(delta))**2
         self.matrix[1, 0] = 0.0
-        self.matrix[1, 1] = (np.cos(2*theta))**2 + np.cos(delta) * (np.sin(2*theta))**2
-        self.matrix[1, 2] = np.cos(2*theta) * np.sin(2*theta) - np.cos(2*theta) * np.cos(delta) * np.sin(2*theta)
-        self.matrix[1, 3] = np.sin(2*theta) * np.sin(delta)
+        self.matrix[1, 1] = (numpy.cos(2*theta))**2 + numpy.cos(delta) * (numpy.sin(2*theta))**2
+        self.matrix[1, 2] = numpy.cos(2*theta) * numpy.sin(2*theta) - numpy.cos(2*theta) * numpy.cos(delta) * numpy.sin(2*theta)
+        self.matrix[1, 3] = numpy.sin(2*theta) * numpy.sin(delta)
 
         # Third row.
         self.matrix[2, 0] = 0.0
-        self.matrix[2, 1] = np.cos(2*theta) * np.sin(2*theta) - np.cos(2*theta) * np.cos(delta) * np.sin(2*theta)
-        self.matrix[2, 2] = np.cos(delta) * (np.cos(2*theta))**2 + (np.sin(2*theta))**2
-        self.matrix[2, 3] = - np.cos(2*theta) * np.sin(delta)
+        self.matrix[2, 1] =  numpy.cos(2*theta) * numpy.sin(2*theta) - numpy.cos(2*theta) * numpy.cos(delta) * numpy.sin(2*theta)
+        self.matrix[2, 2] =  numpy.cos(delta) * (numpy.cos(2*theta))**2 + (numpy.sin(2*theta))**2
+        self.matrix[2, 3] = -numpy.cos(2*theta) * numpy.sin(delta)
 
         # Fourth row.
         self.matrix[3, 0] = 0.0
-        self.matrix[3, 1] = -np.sin(2*theta) * np.sin(delta)
-        self.matrix[3, 2] = np.cos(2*theta) * np.sin(delta)
-        self.matrix[3, 3] = np.cos(delta)
+        self.matrix[3, 1] = -numpy.sin(2*theta) * numpy.sin(delta)
+        self.matrix[3, 2] =  numpy.cos(2*theta) * numpy.sin(delta)
+        self.matrix[3, 3] =  numpy.cos(delta)
 
     def calculate_stokes_vector(self,incoming_stokes_vector):
         """

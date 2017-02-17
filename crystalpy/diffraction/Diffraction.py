@@ -14,9 +14,10 @@ from crystalpy.diffraction.DiffractionExceptions import ReflectionImpossibleExce
                                                                     StructureFactorFHbarIsZeroException
 from crystalpy.util.Photon import Photon
 from crystalpy.util.PolarizedPhoton import PolarizedPhoton
+from crystalpy.util.ComplexAmplitudePhotonBunch import ComplexAmplitudePhotonBunch
+
 from crystalpy.util.PhotonBunch import PhotonBunch
 from crystalpy.util.PolarizedPhotonBunch import PolarizedPhotonBunch
-from crystalpy.util.ComplexAmplitudePhotonBunch import ComplexAmplitudePhotonBunch
 
 
 from crystalpy.diffraction.DiffractionResult import DiffractionResult
@@ -421,9 +422,7 @@ class Diffraction(object):
         # Return diffraction results.
         return outgoing_bunch
 
-    #
-    # not using stokes/mueller
-    #
+    # calculate complex reflectivity and transmitivity
     def calculateDiffractedComplexAmplitudes(self, diffraction_setup, incoming_photon):
 
         # Get PerfectCrystal instance for the current photon.
@@ -434,7 +433,6 @@ class Diffraction(object):
 
         return complex_amplitudes
 
-    #
     # using ComplexAmplitudePhoton
     def calculateDiffractedComplexAmplitudePhoton(self, diffraction_setup,photon):
 

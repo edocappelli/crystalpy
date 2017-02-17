@@ -98,13 +98,12 @@ class DiffractionSetupSweeps(DiffractionSetup):
     # overwritten methods
     #
 
-    # TODO: rename toDictionary ??
-    def asInfoDictionary(self):
+    def toDictionary(self):
         """
         Returns this setup in InfoDictionary form.
         :return: InfoDictionary form of this setup.
         """
-        info_dict = DiffractionSetup.asInfoDictionary(self)
+        info_dict = DiffractionSetup.toDictionary(self)
 
         info_dict["Minimum energy"] = str(self.energyMin())
         info_dict["Maximum energy"] = str(self.energyMax())
@@ -169,7 +168,6 @@ class DiffractionSetupSweeps(DiffractionSetup):
     #
     # end overwritten methods
     #
-
 
     def incomingPhotons(self):
         """

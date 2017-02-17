@@ -2,9 +2,8 @@
 This object contains a list of PolarizedPhoton objects, characterized by energy, direction vector and Stokes vector.
 This object is used as input to and output from the passive crystal widget.
 """
-import numpy as np
+import numpy
 
-from crystalpy.util.PolarizedPhoton import PolarizedPhoton
 from crystalpy.util.PhotonBunch import PhotonBunch
 
 
@@ -29,8 +28,8 @@ class PolarizedPhotonBunch(PhotonBunch):
         """
         array_dict = PhotonBunch.toDictionary(self)
 
-        stokes = np.zeros([4, len(self)])
-        polarization_degrees = np.zeros(len(self))
+        stokes = numpy.zeros([4, len(self)])
+        polarization_degrees = numpy.zeros(len(self))
 
         for i,polarized_photon in enumerate(self):
             stokes[0, i] = polarized_photon.stokesVector().s0

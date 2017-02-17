@@ -185,11 +185,9 @@ def calculate_with_polarized_photon(method=0):
 
     bunch_out_dict = bunch_out.toDictionary()
 
-    #TODO check deviations.... look weird
-    plot(1e6*bunch_out_dict["deviations"],bunch_out_dict["s0"],xtitle="theta - thetaB [urad]",
+    plot(1e6*ZZ,bunch_out_dict["s0"],xtitle="theta - thetaB [urad]",
                                         title="Polarized S0 reflectivity calculation using method %d"%method)
 
-    plot(bunch_out_dict["deviations"],ZZ)
 
 def calculate_simple_diffraction():
 
@@ -317,9 +315,9 @@ def calculate_with_complex_amplitude_photon(method=0):
 
 
 if __name__ == "__main__":
-    # make_plots( calculate_standard_interface() )
-    # calculate_with_polarized_photon(method=0)
-    # calculate_with_polarized_photon(method=1)
-    # calculate_simple_diffraction()
-    # calculate_with_complex_amplitude_photon(method=0)
+    make_plots( calculate_standard_interface() )
+    calculate_with_polarized_photon(method=0)
+    calculate_with_polarized_photon(method=1)
+    calculate_simple_diffraction()
+    calculate_with_complex_amplitude_photon(method=0)
     calculate_with_complex_amplitude_photon(method=1)

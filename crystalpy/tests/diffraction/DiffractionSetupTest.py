@@ -208,7 +208,7 @@ class DiffractionSetupTest(unittest.TestCase):
     def testAsInfoDictionary(self):
         diffraction_setup = diffractionSetup()
 
-        info_dict = diffraction_setup.asInfoDictionary()
+        info_dict = diffraction_setup.toDictionary()
 
         self.assertEqual(info_dict["Geometry Type"],
                          "Bragg diffraction")
@@ -279,5 +279,5 @@ class DiffractionSetupTest(unittest.TestCase):
 
     def testGeometry(self):
         diffraction_setup = diffractionSetup()
-        self.assertTrue( diffraction_setup.asInfoDictionary()["Geometry Type"] == "Bragg diffraction")
+        self.assertTrue( diffraction_setup.toDictionary()["Geometry Type"] == "Bragg diffraction")
 

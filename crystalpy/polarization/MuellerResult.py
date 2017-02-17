@@ -3,7 +3,7 @@ Represents Mueller calculation results.
 """
 import numpy
 
-
+# TODO inheritate from DiffractionResults?
 class MuellerResult(object):
 
     def __init__(self, diffraction_result):
@@ -34,7 +34,6 @@ class MuellerResult(object):
         self._circular_polarization_degree = numpy.zeros((number_energies,
                                                  number_angles))
 
-    # TODO: not needed
     def energies(self):
         """
         Returns the energies used for these results.
@@ -51,7 +50,6 @@ class MuellerResult(object):
         energy_index = abs(self.energies()-energy).argmin()
         return energy_index
 
-    # TODO: Redundant?
     def angle_deviations(self):
         """
         Returns the angle deviations used for these results.

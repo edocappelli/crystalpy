@@ -32,22 +32,6 @@ class PolarizedPhoton(Photon):
                                self._unit_direction_vector.duplicate(),
                                self._stokes_vector.duplicate())
 
-    # # #TODO move to Photon
-    # def setUnitDirectionVector(self, direction_vector):
-    #     """
-    #     :type direction_vector: Vector
-    #     """
-    #     self._unit_direction_vector = direction_vector.getNormalizedVector()
-    #
-    # def deviation(self):
-    #     """
-    #     the deviations are calculated supposing that the bunch moves along the y axis
-    #     and considering a clockwise rotation as a positive deviation.
-    #     """
-    #     vector = self.unitDirectionVector().components()  # ndarray([x, y, z])
-    #     deviation = numpy.arctan2(vector[2], vector[1])
-    #
-    #     return deviation
 
     def stokesVector(self):
         """
@@ -83,11 +67,11 @@ class PolarizedPhoton(Photon):
 
         return False
 
-    # TODO not needed? inheritated?
-    def __ne__(self, candidate):
-        """
-        Determines if two polarized photons are not identical (same energy, direction and polarization).
-        :param candidate: Polarized photon to compare with.
-        :return: True if not equal otherwise False.
-        """
-        return not (self == candidate)
+    # # TODO not needed? inheritated?
+    # def __ne__(self, candidate):
+    #     """
+    #     Determines if two polarized photons are not identical (same energy, direction and polarization).
+    #     :param candidate: Polarized photon to compare with.
+    #     :return: True if not equal otherwise False.
+    #     """
+    #     return not (self == candidate)

@@ -21,13 +21,11 @@ class StokesVector(object):
     def duplicate(self):
         return StokesVector(self.components())
 
-    # TODO change toList, toArray
 
     def components(self):
         """
         Generates a numpy 1x4 array from the Stokes vector components.
         """
-
         return numpy.array(self.getList())
 
     def getS0(self):
@@ -42,8 +40,6 @@ class StokesVector(object):
     def getS3(self):
         return self.components()[3]
 
-
-
     def getList(self):
         """
         Generates a 1x4 array from the Stokes vector components.
@@ -55,10 +51,7 @@ class StokesVector(object):
         result.append(self.s1)
         result.append(self.s2)
         result.append(self.s3)
-    #
-    #     if numpyarray:
-    #         return numpy.asarray(result)
-    #
+
         return result
 
     def setFromArray(self, array):
@@ -75,10 +68,6 @@ class StokesVector(object):
         self.s2 = float(s2)
         self.s3 = float(s3)
 
-
-
-    #TODO rename to circular_polarization_degree
-    # def polarization_degree(self):
     def circularPolarizationDegree(self):
         """
         Calculates the degree of circular polarization of the radiation
@@ -116,10 +105,3 @@ class StokesVector(object):
 
         return True
 
-    def __ne__(self, candidate):
-        """
-        Determines whether two Stokes vectors are not equal.
-        :param candidate: Stokes vector to compare to.
-        :return: True if not equal. False if equal.
-        """
-        return not self == candidate

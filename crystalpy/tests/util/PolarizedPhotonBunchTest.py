@@ -10,7 +10,7 @@ from numpy.testing import assert_almost_equal
 
 from crystalpy.util.Vector import Vector
 from crystalpy.util.StokesVector import StokesVector
-from crystalpy.util.PolarizedPhotonBunch import PolarizedPhoton
+from crystalpy.util.PolarizedPhoton import PolarizedPhoton
 from crystalpy.util.PolarizedPhotonBunch import PolarizedPhotonBunch
 
 

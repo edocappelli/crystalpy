@@ -5,7 +5,6 @@ Except for energy all units are in SI.
 
 from collections import OrderedDict
 from copy import deepcopy
-import numpy as np
 import xraylib
 import numpy
 
@@ -190,7 +189,7 @@ class DiffractionSetup(object):
         # M.Sanchez del Rio et al., J.Appl.Cryst.(2015). 48, 477-491.
 
 
-        g_modulus = 2.0 * np.pi / (self.dSpacing() * 1e-10)
+        g_modulus = 2.0 * numpy.pi / (self.dSpacing() * 1e-10)
         # Let's start from a vector parallel to the surface normal (z axis).
         temp_normal_bragg = Vector(0, 0, 1).scalarMultiplication(g_modulus)
 
@@ -216,14 +215,6 @@ class DiffractionSetup(object):
         # Edoardo: I use the geometrical convention from
         # M.Sanchez del Rio et al., J.Appl.Cryst.(2015). 48, 477-491.
         normal_surface = Vector(0, 0, 1)
-
-        # Mark's version:
-        # asymmetry_angle = self.asymmetryAngle()
-
-        # normal_surface = Vector(np.sin(asymmetry_angle),
-                                # 0.0,
-                                # np.cos(asymmetry_angle))
-
         return normal_surface
 
 
@@ -239,8 +230,7 @@ class DiffractionSetup(object):
         return unit_cell_volume
 
 
-    # TODO: rename toDictionary ??
-    def asInfoDictionary(self):
+    def toDictionary(self):
         """
         Returns this setup in InfoDictionary form.
         :return: InfoDictionary form of this setup.
@@ -258,7 +248,9 @@ class DiffractionSetup(object):
         return info_dict
 
 
-    # TODO rename getK0?
+
+    def getK0(self, energy):
+        return self.incomingPhotonDirection(energy)
 
     def incomingPhotonDirection(self, energy, deviation):
         """
@@ -270,25 +262,15 @@ class DiffractionSetup(object):
         # Edoardo: I use the geometrical convention from
         # M.Sanchez del Rio et al., J.Appl.Cryst.(2015). 48, 477-491.
 
-
         # TODO: vectorize this part as in https://github.com/srio/CRYSTAL/blob/master/crystal3.F90
-
 
         # angle between the incoming photon direction and the surface normal (z axis).
         # a positive deviation means the photon direction lies closer to the surface normal.
-        angle = np.pi / 2.0 - (self.angleBragg(energy) + self.asymmetryAngle() + deviation)
+        angle = numpy.pi / 2.0 - (self.angleBragg(energy) + self.asymmetryAngle() + deviation)
 
         # the photon comes from left to right in the yz plane.
-        photon_direction = Vector(0,
-                                  np.sin(angle),
-                                  -np.cos(angle))
+        photon_direction = Vector(0,numpy.sin(angle),-numpy.cos(angle))
 
-        # Mark's version:
-        # angle = np.pi / 2.0 - (self.angleBragg(energy) + deviation)
-
-        # photon_direction = Vector(-np.sin(angle),
-                                  # 0,
-                                  # -np.cos(angle))
         # TODO: it seems that we should apply the rotation azimuthal_angle
 
         return photon_direction

@@ -146,7 +146,7 @@ class DiffractionSetupSweepsTest(unittest.TestCase):
     def testAsInfoDictionary(self):
         diffraction_setup = diffractionSetup()
 
-        info_dict = diffraction_setup.asInfoDictionary()
+        info_dict = diffraction_setup.toDictionary()
 
         self.assertEqual(info_dict["Geometry Type"],
                          "Bragg diffraction")

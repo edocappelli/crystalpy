@@ -4,9 +4,6 @@ This object contains a list of Photon objects, characterized by energy and direc
 """
 import numpy
 
-from crystalpy.util.Photon import Photon
-
-
 class PhotonBunch(object):
     """
     is a collection of Photon objects, making up the photon beam.
@@ -69,25 +66,6 @@ class PhotonBunch(object):
     # end of methods to be extended
     #
 
-
-    # def addPhotons(self, to_be_added):
-    #     """
-    #     :param to_be_added: PolarizedPhoton object(s) to be added to the bunch.
-    #     :type to_be_added: PolarizedPhoton or list(PolarizedPhoton) of PhotonBunch
-    #     """
-    #     if type(to_be_added) == Photon:
-    #         self.polarized_photon_bunch.append(to_be_added)
-    #
-    #     elif type(to_be_added) == list:
-    #         self.polarized_photon_bunch.extend(to_be_added)
-    #
-    #     elif type(to_be_added) == PhotonBunch:
-    #         self.polarized_photon_bunch.extend(to_be_added.photon_bunch)
-    #
-    #     else:
-    #         self.polarized_photon_bunch.append(to_be_added)
-    #         #raise TypeError("The photon(s) could not be added to the bunch!"+repr(type(to_be_added)))
-
     def addPhoton(self, to_be_added):
         self.polarized_photon_bunch.append(to_be_added)
 
@@ -146,8 +124,6 @@ class PhotonBunch(object):
                 return False
 
         return True
-
-
 
     def __len__(self):
         return len(self.polarized_photon_bunch)

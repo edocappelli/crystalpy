@@ -65,7 +65,7 @@ class MuellerMatrix(object):
         return cls.initialize_as_general_linear_retarder(0.0,0.0).matrix_by_scalar(transmission)
 
 
-    def from_matrix_to_elements(self, numpy=True):
+    def from_matrix_to_elements(self, return_numpy=True):
         """
         Returns a numpy.ndarray of the elements of a given matrix.
         If a list is needed one can use the numpy.array.tolist() method.
@@ -75,7 +75,7 @@ class MuellerMatrix(object):
         matrix = numpy.asarray(self.matrix)
         result = matrix.flatten()
 
-        if numpy:
+        if return_numpy:
             return result
 
         return list(result)
@@ -108,7 +108,7 @@ class MuellerMatrix(object):
 
         return list(result)
 
-    def vector_by_matrix(self, vector, numpy=True):
+    def vector_by_matrix(self, vector, return_numpy=True):
         """
         Multiplies the matrix by a vector.
         :param numpy: if True returns numpy.ndarray, if False returns list.
@@ -118,7 +118,7 @@ class MuellerMatrix(object):
         matrix = numpy.asarray(self.matrix)
         result = numpy.dot(vector, matrix)
 
-        if numpy:
+        if return_numpy:
             return result
 
         return list(result)
@@ -185,7 +185,7 @@ class MuellerMatrix(object):
 
         # Third row.
         self.matrix[2, 0] = 0.5 * numpy.sin(2*theta)
-        self.matrix[2, 1] = 0.5 * numpy.sin(2*theta) * np.cos(2*theta)
+        self.matrix[2, 1] = 0.5 * numpy.sin(2*theta) * numpy.cos(2*theta)
         self.matrix[2, 2] = 0.5 * (numpy.sin(2*theta))**2
         self.matrix[2, 3] = 0.0
 

@@ -182,6 +182,11 @@ class DiffractionSetup(object):
     def normalBragg(self,return_normalized=False):
         """
         Calculates the B_H vecor, normal on the reflection lattice plane, with modulus 2 pi / d_spacing .
+
+        normal to Bragg planes obtained by rotating vnor an angle equal to minuns asymmetry angle (-alphaXOP)
+        around X using rodrigues rotation (in the screw direction (cw) when looking in the axis direction),
+        and then an angle phi (azimuthal angle) around Z
+
         :param return_normalized: if True the returned vector is normalized.
         :return: B_H vector
         """
@@ -195,7 +200,8 @@ class DiffractionSetup(object):
 
         # Let's now rotate this vector of an angle alphaX around the y axis (according to the right-hand-rule).
         alpha_x = self.asymmetryAngle()
-        temp_normal_bragg = temp_normal_bragg.rotateAroundAxis(Vector(1, 0, 0), -alpha_x)
+        axis = self.parallelSurface().crossProduct(self.normalSurface())  # should be Vector(1, 0, 0)
+        temp_normal_bragg = temp_normal_bragg.rotateAroundAxis(axis, -alpha_x)
 
         # Let's now rotate this vector of an angle phi around the z axis (following the ISO standard 80000-2:2009).
         phi = self.azimuthalAngle()
@@ -208,14 +214,23 @@ class DiffractionSetup(object):
 
     def normalSurface(self):
         """
-        Calculates surface normal n.
-        asymmetry_angle: Asymmetry angle of the surface cut.
-        :return: Surface normal n.
+        Returns the normal to the surface. (0,0,1) by definition.
+        :return: Vector instance with Surface normal Vnor.
         """
         # Edoardo: I use the geometrical convention from
         # M.Sanchez del Rio et al., J.Appl.Cryst.(2015). 48, 477-491.
         normal_surface = Vector(0, 0, 1)
         return normal_surface
+
+    def parallelSurface(self):
+        """
+        Returns the direction parallel to the crystal surface. (0,1,0) by definition.
+        :return: Vector instance with Surface normal Vtan.
+        """
+        # Edoardo: I use the geometrical convention from
+        # M.Sanchez del Rio et al., J.Appl.Cryst.(2015). 48, 477-491.
+        parallel_surface = Vector(0, 1, 0)
+        return parallel_surface
 
 
     def unitcellVolume(self):
@@ -250,7 +265,7 @@ class DiffractionSetup(object):
 
 
     def getK0(self, energy):
-        return self.incomingPhotonDirection(energy)
+        return self.incomingPhotonDirection(energy,0.0)
 
     def incomingPhotonDirection(self, energy, deviation):
         """
@@ -262,16 +277,24 @@ class DiffractionSetup(object):
         # Edoardo: I use the geometrical convention from
         # M.Sanchez del Rio et al., J.Appl.Cryst.(2015). 48, 477-491.
 
-        # TODO: vectorize this part as in https://github.com/srio/CRYSTAL/blob/master/crystal3.F90
+        # # DONE: vectorize this part as in https://github.com/srio/CRYSTAL/blob/master/crystal3.F90
+        # # angle between the incoming photon direction and the surface normal (z axis).
+        # # a positive deviation means the photon direction lies closer to the surface normal.
+        # angle = numpy.pi / 2.0 - (self.angleBragg(energy) + self.asymmetryAngle() + deviation)
+        # # the photon comes from left to right in the yz plane.
+        # photon_direction_old = Vector(0,numpy.sin(angle),-numpy.cos(angle))
 
-        # angle between the incoming photon direction and the surface normal (z axis).
-        # a positive deviation means the photon direction lies closer to the surface normal.
-        angle = numpy.pi / 2.0 - (self.angleBragg(energy) + self.asymmetryAngle() + deviation)
 
-        # the photon comes from left to right in the yz plane.
-        photon_direction = Vector(0,numpy.sin(angle),-numpy.cos(angle))
+        # Let's now rotate -BH of an angle (90-BraggAngle) around the x axis
+        minusBH = self.normalBragg().scalarMultiplication(-1.0)
+        minusBH = minusBH.getNormalizedVector()
+        axis = self.parallelSurface().crossProduct(self.normalSurface())  # should be Vector(1, 0, 0)
+        # TODO check why deviation has minus
+        photon_direction = minusBH.rotateAroundAxis(axis, (numpy.pi/2)-self.angleBragg(energy)-deviation)
 
-        # TODO: it seems that we should apply the rotation azimuthal_angle
+        # print("PHOTON DIRECTION ",photon_direction_old.components(),photon_direction.components())
+        # Let's now rotate this vector of an angle phi around the z axis (following the ISO standard 80000-2:2009).
+        # photon_direction = photon_direction.rotateAroundAxis(Vector(0, 0, 1), self.azimuthalAngle() )
 
         return photon_direction
 

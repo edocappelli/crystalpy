@@ -69,4 +69,4 @@ class CrystalPhasePlateTest(unittest.TestCase):
                               -0.10763540116609252,
                               -0.7128678636549213])
         # default precision: 6 decimal places.
-        np.testing.assert_array_almost_equal(candidate, outgoing_stokes_vector.get_array(numpy=True))
+        np.testing.assert_array_almost_equal(candidate, outgoing_stokes_vector.components())

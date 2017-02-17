@@ -33,8 +33,8 @@ class MuellerMatrixTest(unittest.TestCase):
                         0.9302512754240655, 0.31523109368760793, 0.14892732688907617, 0.6794292697143903,
                         0.4445952221208559, 0.3645127814592628, 0.1683036723562683, 0.6726938039088263,
                         0.5613952867979658, 0.1067151292280123, 0.4887844163526709, 0.27447059819338904]
-        matrix1 = self.mueller_matrix.from_matrix_to_elements(numpy=False)
-        matrix2 = self.mueller_matrix.from_matrix_to_elements(numpy=True)
+        matrix1 = self.mueller_matrix.from_matrix_to_elements(return_numpy=False)
+        matrix2 = self.mueller_matrix.from_matrix_to_elements(return_numpy=True)
         self.assertEqual(type(matrix1), list)
         self.assertEqual(type(matrix2), np.ndarray)
         np.testing.assert_array_almost_equal(matrix2, np.asarray(element_list))
@@ -55,8 +55,8 @@ class MuellerMatrixTest(unittest.TestCase):
 
     def test_matrix_by_vector(self):
         vector = np.array([2.3305949456965642, 8.395751778702131, 1.8896988291928611, -9.515370772747518])
-        res1 = self.mueller_matrix.matrix_by_vector(vector, numpy=False)
-        res2 = self.mueller_matrix.matrix_by_vector(vector, numpy=True)
+        res1 = self.mueller_matrix.matrix_by_vector(vector, return_numpy=False)
+        res2 = self.mueller_matrix.matrix_by_vector(vector, return_numpy=True)
         self.assertEqual(type(res1), list)
         self.assertEqual(type(res2), np.ndarray)
         self.assertListEqual(res1, list(np.dot(self.mueller_matrix.matrix, vector)))
@@ -64,8 +64,8 @@ class MuellerMatrixTest(unittest.TestCase):
 
     def test_vector_by_matrix(self):
         vector = np.array([2.3305949456965642, 8.395751778702131, 1.8896988291928611, -9.515370772747518])
-        res1 = self.mueller_matrix.vector_by_matrix(vector, numpy=False)
-        res2 = self.mueller_matrix.vector_by_matrix(vector, numpy=True)
+        res1 = self.mueller_matrix.vector_by_matrix(vector, return_numpy=False)
+        res2 = self.mueller_matrix.vector_by_matrix(vector, return_numpy=True)
         self.assertEqual(type(res1), list)
         self.assertEqual(type(res2), np.ndarray)
         self.assertListEqual(res1, list(np.dot(vector, self.mueller_matrix.matrix)))

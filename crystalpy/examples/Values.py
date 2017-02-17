@@ -285,4 +285,4 @@ class Values(object):
                                                                           inclination_angle=self.inclination_angle,
                                                                           phase_inf_limit=self.phase_inf_limit,
                                                                           phase_sup_limit=self.phase_sup_limit,
-                                                                          incoming_stokes_vector=self.incoming_stokes_vector.get_array(numpy=False)))
+                                                                          incoming_stokes_vector=self.incoming_stokes_vector.components()))

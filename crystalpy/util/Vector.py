@@ -15,7 +15,7 @@ class Vector(object):
         self.setComponents(x, y, z)
 
     @staticmethod
-    def fromComponents(components):
+    def initializeFromComponents(components):
         """
         Creates a vector from a list/array of at least three elements.
         :param components: x,y,z components of the vector.
@@ -44,6 +44,15 @@ class Vector(object):
         """
         return self._components
 
+    def getX(self):
+        return self.components()[0]
+
+    def getY(self):
+        return self.components()[1]
+
+    def getZ(self):
+        return self.components()[2]
+
     def __eq__(self, candidate):
         """
         Determines if two vectors are equal.
@@ -69,7 +78,7 @@ class Vector(object):
         :return: The sum as a vector.
         """
         components = self.components() + summand.components()
-        return Vector.fromComponents(components)
+        return Vector.initializeFromComponents(components)
 
     def scalarMultiplication(self, factor):
         """
@@ -78,7 +87,7 @@ class Vector(object):
         :return: Scalar multiplied vector.
         """
         components = self.components() * factor
-        return Vector.fromComponents(components)
+        return Vector.initializeFromComponents(components)
 
     def subtractVector(self, subtrahend):
         """
@@ -105,7 +114,7 @@ class Vector(object):
         :return: Cross product of the two vectors.
         """
         components = np.cross(self.components(), factor.components())
-        return Vector.fromComponents(components)
+        return Vector.initializeFromComponents(components)
 
     def norm(self):
         """
@@ -218,17 +227,10 @@ class Vector(object):
 
         return vector_with_angle
 
-    # TODO: return a text array, do not print
     def printComponents(self):
-        """
-        Prints the components of this vector.
-        """
-        print("Vector: x", self.components()[0])
-        print("Vector: y", self.components()[1])
-        print("Vector: z", self.components()[2])
+        print(self.toString())
 
-    # TODO camelCase
-    def to_string(self):
+    def toString(self):
         """
         :return: a string object containing the four components of the Stokes vector.
         """

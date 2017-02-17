@@ -10,7 +10,7 @@ from numpy.testing import assert_almost_equal
 
 from crystalpy.util.Vector import Vector
 from crystalpy.util.StokesVector import StokesVector
-from crystalpy.util.PolarizedPhotonBunch import PolarizedPhoton
+from crystalpy.util.PolarizedPhoton import PolarizedPhoton
 from crystalpy.util.PolarizedPhotonBunch import PolarizedPhotonBunch
 
 
@@ -32,26 +32,26 @@ class PolarizedPhotonBunchTest(unittest.TestCase):
 
         photon_bunch = PolarizedPhotonBunch([])
 
-        # t0 = time.time()
         photons_list = list()
         for i in range(npoint):
 
             photon = PolarizedPhoton(energy_in_ev=energy[i],
                                      direction_vector=Vector(vx[i],vy[i],vz[i]),
                                      stokes_vector=StokesVector([s0[i],s1[i],s2[i],s3[i]]))
-            #photon_bunch.add(photon)
             photons_list.append(photon)
 
 
-        photon_bunch.add(photons_list)
-        # print("Conversion in %f s"%(time.time() - t0))
+        photon_bunch.addPhotonsFromList(photons_list)
 
-        self.assertTrue(  1.0 == any(photon_bunch.get_array("s0"))  )
-        self.assertTrue(  0.0 == any(photon_bunch.get_array("s1"))  )
-        self.assertTrue(  1.0 == any(photon_bunch.get_array("s2"))  )
-        self.assertTrue(  0.0 == any(photon_bunch.get_array("s3"))  )
+        # print("<><><>",photon_bunch.toString())
+        # print("<><><>",photon_bunch.toDictionary())
 
-        energies = photon_bunch.get_array("energies")
+        self.assertTrue(  1.0 == any(photon_bunch.getArrayByKey("s0"))  )
+        self.assertTrue(  0.0 == any(photon_bunch.getArrayByKey("s1"))  )
+        self.assertTrue(  1.0 == any(photon_bunch.getArrayByKey("s2"))  )
+        self.assertTrue(  0.0 == any(photon_bunch.getArrayByKey("s3"))  )
+
+        energies = photon_bunch.getArrayByKey("energies")
         for energy in energies:
             self.assertAlmostEqual(  energy, 3000.0)
 
@@ -68,15 +68,15 @@ class PolarizedPhotonBunchTest(unittest.TestCase):
             polarized_photon = PolarizedPhoton(energy_in_ev=1000.0+i,
                                                direction_vector=Vector(0,1.0,0),
                                                stokes_vector=StokesVector([1.0,0,1.0,0]))
-            bunch.add(polarized_photon)
+            bunch.addPhoton(polarized_photon)
 
         # photon5_stokes = bunch.get_photon_index(5).stokesVector().get_array(numpy=True)
         # print("photon 5 stokes ",photon5_stokes)
 
-        photon5 = bunch.get_photon_index(5)
+        photon5 = bunch.getPhotonIndex(5)
 
         photon5.setStokesVector(StokesVector([1,0,0,0]))
-        photon5_stokes_new = bunch.get_photon_index(5).stokesVector().get_array(numpy=True)
+        photon5_stokes_new = bunch.getPhotonIndex(5).stokesVector().components()
 
 
         # print("photon 5 stokes new ",photon5_stokes_new)

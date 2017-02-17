@@ -1,6 +1,5 @@
-# from crystalpy.polarization.StokesVector import StokesVector
 from crystalpy.polarization.MuellerMatrix import MuellerMatrix
-import numpy as np
+import numpy
 
 
 # TODO rename to PerfectCrystalMuellerMatrix
@@ -32,34 +31,34 @@ class CrystalPhasePlate(MuellerMatrix):
         alpha = inclination_angle  # radians.
 
         # Create the Mueller matrix for a phase plate as a numpy array.
-        phase_plate_matrix = np.zeros([4, 4])
+        phase_plate_matrix = numpy.zeros([4, 4])
 
         # First row.
         phase_plate_matrix[0, 0] = 0.5 * (intensity_sigma + intensity_pi)
-        phase_plate_matrix[0, 1] = 0.5 * (intensity_sigma - intensity_pi) * np.cos(2 * alpha)
-        phase_plate_matrix[0, 2] = 0.5 * (intensity_sigma - intensity_pi) * np.sin(2 * alpha)
+        phase_plate_matrix[0, 1] = 0.5 * (intensity_sigma - intensity_pi) * numpy.cos(2 * alpha)
+        phase_plate_matrix[0, 2] = 0.5 * (intensity_sigma - intensity_pi) * numpy.sin(2 * alpha)
         phase_plate_matrix[0, 3] = 0.0
 
         # Second row.
         phase_plate_matrix[1, 0] = 0.5 * (intensity_sigma - intensity_pi)
-        phase_plate_matrix[1, 1] = 0.5 * (intensity_sigma + intensity_pi) * np.cos(2 * alpha)
-        phase_plate_matrix[1, 2] = 0.5 * (intensity_sigma + intensity_pi) * np.sin(2 * alpha)
+        phase_plate_matrix[1, 1] = 0.5 * (intensity_sigma + intensity_pi) * numpy.cos(2 * alpha)
+        phase_plate_matrix[1, 2] = 0.5 * (intensity_sigma + intensity_pi) * numpy.sin(2 * alpha)
         phase_plate_matrix[1, 3] = 0.0
 
-        scalar = np.sqrt(intensity_sigma) * np.sqrt(intensity_pi)
+        scalar = numpy.sqrt(intensity_sigma) * numpy.sqrt(intensity_pi)
         delta_phase = phase_pi - phase_sigma
 
         # Third row.
         phase_plate_matrix[2, 0] = 0.0
-        phase_plate_matrix[2, 1] = - scalar * np.cos(delta_phase) * np.sin(2 * alpha)
-        phase_plate_matrix[2, 2] = scalar * np.cos(delta_phase) * np.cos(2 * alpha)
-        phase_plate_matrix[2, 3] = - scalar * np.sin(delta_phase)
+        phase_plate_matrix[2, 1] = - scalar * numpy.cos(delta_phase) * numpy.sin(2 * alpha)
+        phase_plate_matrix[2, 2] = scalar * numpy.cos(delta_phase) * numpy.cos(2 * alpha)
+        phase_plate_matrix[2, 3] = - scalar * numpy.sin(delta_phase)
 
         # Fourth row.
         phase_plate_matrix[3, 0] = 0.0
-        phase_plate_matrix[3, 1] = - scalar * np.sin(delta_phase) * np.sin(2 * alpha)
-        phase_plate_matrix[3, 2] = scalar * np.sin(delta_phase) * np.cos(2 * alpha)
-        phase_plate_matrix[3, 3] = scalar * np.cos(delta_phase)
+        phase_plate_matrix[3, 1] = - scalar * numpy.sin(delta_phase) * numpy.sin(2 * alpha)
+        phase_plate_matrix[3, 2] = scalar * numpy.sin(delta_phase) * numpy.cos(2 * alpha)
+        phase_plate_matrix[3, 3] = scalar * numpy.cos(delta_phase)
 
         return phase_plate_matrix
 

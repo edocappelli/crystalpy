@@ -29,8 +29,20 @@ class PolarizedPhotonTest(unittest.TestCase):
         ph1 = PolarizedPhoton(8000.0,Vector(2,4,5),StokesVector([1,2,3,4]))
         ph2 = ph1.duplicate()
 
-        assert_array_almost_equal(ph1.stokesVector().get_array(numpy=True),
-                                  ph2.stokesVector().get_array(numpy=True) )
+        assert_array_almost_equal(ph1.stokesVector().components(),
+                                  ph2.stokesVector().components() )
 
         assert_array_almost_equal(ph1.unitDirectionVector().components(),
                                   ph2.unitDirectionVector().components() )
+
+    def testInheritatedMethods(self):
+        ph1 = PolarizedPhoton(8000.0,Vector(2,4,5),StokesVector([1,2,3,4]))
+
+        ph1.setUnitDirectionVector(Vector(1,0,0))
+        ph1.setEnergy(9000)
+
+        self.assertTrue( ph1.unitDirectionVector().components()[0] == 1)
+        self.assertTrue( ph1.unitDirectionVector().components()[1] == 0)
+        self.assertTrue( ph1.unitDirectionVector().components()[2] == 0)
+
+        self.assertTrue( ph1.energy() == 9000.0)

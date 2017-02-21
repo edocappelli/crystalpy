@@ -6,7 +6,7 @@ __date__ = "23/11/2016"
 from setuptools import setup
 
 setup(name='crystalpy',
-      version='0.0.1',
+      version='0.0.2',
       description='Python crystal polarization calcution',
       author='Edoardo Cappelli, Mark Glass, Manuel Sanchez del Rio',
       author_email='srio@esrf.eu',
@@ -21,5 +21,5 @@ setup(name='crystalpy',
                         'numpy',
                         'scipy'
                        ],
-      # test_suite='tests'
+      test_suite='tests'
       )

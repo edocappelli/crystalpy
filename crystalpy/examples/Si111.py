@@ -7,9 +7,6 @@
 #      using the standard interface via definition of a photon grid (DiffractionSetupSweeps) and
 #      the DiffractionResult object
 #
-#    - calculate_simple_diffraction()
-#      Uses a crystal setup and calculates the complex transmitivity and reflectivity
-#
 #    - calculate_with_complex_amplitude_photon(method=0 or 1)
 #      Calculates diffraction of many photons (0) or a photon bunch (1) using ComplexAmplitudePhoton,
 #      so a photon with electric field amplitude.
@@ -131,69 +128,9 @@ def make_plots(mueller_result):
     # Plot the degree of circular polarization.
     plot(1e6*deviation_angles,mueller_result._s3[0]/mueller_result._s0[0],yrange=[-1,1],
          title="Circular Polarization S3/S0",xtitle="Deviation angle [urad]",ytitle="S3/S0",show=True)
-
 #
 #
 #
-def calculate_simple_diffraction():
-
-    # Create a diffraction setup.
-
-    print("\nCreating a diffraction setup...")
-    diffraction_setup = DiffractionSetup(geometry_type          = BraggDiffraction(),  # GeometryType object
-                                               crystal_name           = "Si",                             # string
-                                               thickness              = 1e-2
-
-
-
-                                               ,                             # meters
-                                               miller_h               = 1,                                # int
-                                               miller_k               = 1,                                # int
-                                               miller_l               = 1,                                # int
-                                               asymmetry_angle        = 0,#10.0*numpy.pi/180.,                              # radians
-                                               azimuthal_angle        = 0.0)                              # radians                            # int
-
-
-    energy                 = 8000.0                           # eV
-    angle_deviation_min    = -100e-6                          # radians
-    angle_deviation_max    = 100e-6                           # radians
-    angle_deviation_points = 500
-
-    angle_step = (angle_deviation_max-angle_deviation_min)/angle_deviation_points
-
-    bragg_angle = diffraction_setup.angleBragg(energy)
-
-    print("Bragg angle for E=%f eV is %f deg"%(energy,bragg_angle*180.0/numpy.pi))
-
-
-    # Create a Diffraction object.
-    diffraction = Diffraction()
-
-    deviations = numpy.zeros(angle_deviation_points)
-    intensityS = numpy.zeros(angle_deviation_points)
-    intensityP = numpy.zeros(angle_deviation_points)
-
-    for ia in range(angle_deviation_points):
-        deviation = angle_deviation_min + ia * angle_step
-        angle = deviation  + bragg_angle
-        yy = numpy.cos(angle)
-        zz = - numpy.abs(numpy.sin(angle))
-        photon = Photon(energy_in_ev=energy,direction_vector=Vector(0.0,yy,zz))
-
-        coeffs = diffraction.calculateDiffractedComplexAmplitudes(diffraction_setup,photon)
-        deviations[ia] = deviation
-        intensityS[ia] = coeffs['S'].intensity()
-        intensityP[ia] = coeffs['P'].intensity()
-
-    from srxraylib.plot.gol import plot
-    plot(1e6*deviations,intensityS,1e6*deviations,intensityP,legend=["Sigma-pol","Pi-pol"],
-         xtitle="theta - thetaB [urad]",title="Reflectivity calculation using complex reflectivities")
-
-#
-#
-#
-
-
 def calculate_with_complex_amplitude_photon(method=0):
 
     # Create a diffraction setup.
@@ -393,8 +330,6 @@ def calculate_with_polarized_photon(method=0):
 #
 if __name__ == "__main__":
     make_plots( calculate_standard_interface() )
-
-    calculate_simple_diffraction()
 
     calculate_with_complex_amplitude_photon(method=0)
     calculate_with_complex_amplitude_photon(method=1)

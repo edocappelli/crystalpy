@@ -106,7 +106,11 @@ class CalculationStrategyMath(CalculationStrategy):
         :param power: The power to raise to.
         :return: Exponential.
         """
-        return cmath.exp(power)
+        try:
+            ans =  cmath.exp(power)
+        except:
+            ans = float("Inf")
+        return ans
 
     def toComplex(self, variable):
         """

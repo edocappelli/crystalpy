@@ -4,9 +4,15 @@ __license__ = "MIT"
 __date__ = "23/11/2016"
 
 from setuptools import setup
+#
+# memorandum (for pypi)
+#
+# python setup.py sdist upload
+
+
 
 setup(name='crystalpy',
-      version='0.0.2',
+      version='0.0.4',
       description='Python crystal polarization calcution',
       author='Edoardo Cappelli, Mark Glass, Manuel Sanchez del Rio',
       author_email='srio@esrf.eu',

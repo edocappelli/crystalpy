@@ -87,7 +87,7 @@ def calculate_simple_diffraction():
     plt.plot(1e6*deviations,intensityS)
     plt.plot(1e6*deviations,intensityP)
     plt.xlabel("deviation angle [urad]")
-    plt.xlabel("Reflectivity")
+    plt.ylabel("Reflectivity")
     plt.legend(["Sigma-polarization","Pi-polarization"])
     plt.show()
 

@@ -122,7 +122,7 @@ class CalculationStrategyMath(CalculationStrategy):
 
 
 class PerfectCrystalDiffraction(object):
-    isDebug = False
+    isDebug = True
 
     def __init__(self, geometry_type, bragg_normal, surface_normal, bragg_angle, psi_0, psi_H, psi_H_bar, thickness, d_spacing):
         """
@@ -285,11 +285,36 @@ class PerfectCrystalDiffraction(object):
         k_out_normal_modulus = sqrt(k_in.norm() ** 2 - k_out_parallel.norm() ** 2)
         k_out_normal = self.surface_normal().scalarMultiplication(k_out_normal_modulus)
 
-        # Calculate the outgoing photon.
-        k_out = k_out_parallel.addVector(k_out_normal)
+        # # Calculate the outgoing photon.
+        # # changed srio@esrf.eu to negative normal component to take into account that crystal normal points
+        # # outsize
+        # k_out_1 = k_out_parallel.addVector(k_out_normal)
+        # k_out_2 = k_out_parallel.scalarMultiplication(-1.0).addVector(k_out_normal)
+        #
+        # # select k_out_1 or k_out_2
+        #
+        # k_out_Ewald = photon_in.unitDirectionVector().scalarMultiplication(photon_in.wavenumber())
+        # k_out_Ewald = k_out_Ewald.addVector(B_H)
+        # k_out_Ewald = k_out_Ewald.getNormalizedVector()
+        #
+        # tmp1 = k_out_1.scalarProduct(k_out_Ewald)
+        # tmp2 = k_out_2.scalarProduct(k_out_Ewald)
 
-        # changed by srio to work with any photon object
-        # photon_out = Photon(photon_in.energy(), k_out)
+        # TODO: try to put some logic here
+        if self.geometryType() == BraggDiffraction():
+            k_out = k_out_parallel.addVector(k_out_normal)
+        elif self.geometryType() == LaueDiffraction():
+            k_out = k_out_parallel.addVector(k_out_normal.scalarMultiplication(-1.0))
+        elif self.geometryType() == BraggTransmission():
+            k_out = k_out_parallel.addVector(k_out_normal)
+        elif self.geometryType() == LaueTransmission():
+            k_out = k_out_parallel.addVector(k_out_normal.scalarMultiplication(-1.0))
+        else:
+            raise Exception
+
+
+
+
         photon_out = photon_in.duplicate()
         photon_out.setUnitDirectionVector(k_out)
 
@@ -518,12 +543,12 @@ class PerfectCrystalDiffraction(object):
 
         # If debugging output is turned on.
         if self.isDebug:
-            self._logMembers(zac_b, zac_alpha, photon_in, result)
+            self._logMembers(zac_b, zac_alpha, photon_in, photon_out, result)
 
         # Returns the complex amplitudes.
         return result
 
-    def _logMembers(self, zac_b, zac_alpha, photon_in, result):
+    def _logMembers(self, zac_b, zac_alpha, photon_in, photon_out, result):
         """
         Debug logs the member variables and other relevant partial results.
         :param zac_b: Asymmetry ratio b as defined in Zachariasen [3-115].
@@ -535,10 +560,13 @@ class PerfectCrystalDiffraction(object):
         self.logDebug("psi0: (%.14f , %.14f)" % (self.Psi0().real, self.Psi0().imag))
         self.logDebug("psiH: (%.14f , %.14f)" % (self.PsiH().real, self.PsiH().imag))
         self.logDebug("psiHbar: (%.14f , %.14f)" % (self.PsiHBar().real, self.PsiHBar().imag))
-        self.logDebug("d_spacing: %f " % self.dSpacing())
+        self.logDebug("d_spacing: %g " % self.dSpacing())
         self.logDebug('BraggNormal: ' + str(self.braggNormal().components()))
+        self.logDebug('BraggNormal(Normalized): ' + str(self.braggNormal().getNormalizedVector().components()))
         self.logDebug('b(exact): ' + str(zac_b))
         self.logDebug('alpha: ' + str(zac_alpha))
         self.logDebug('k_0 wavelength: ' + str(photon_in.wavelength()))
+        self.logDebug('PhotonInDirection:  ' + str(photon_in.unitDirectionVector().components()))
+        self.logDebug('PhotonOutDirection: ' + str(photon_out.unitDirectionVector().components()))
         self.logDebug('comp ampl S: ' + str(result["S"].intensity()) + str(result["S"].phase()))
         self.logDebug('comp ampl P: ' + str(result["P"].intensity()) + str(result["P"].phase()))

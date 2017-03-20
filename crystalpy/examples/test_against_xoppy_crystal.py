@@ -23,6 +23,135 @@ from orangecontrib.xoppy.util.xoppy_util import locations
 from orangecontrib.xoppy.util.xoppy_xraylib_util import bragg_calc
 import os
 
+def plot_crystal_sketch(v0,vH,H):
+
+    v0_h = v0.components()[1]
+    v0_v = v0.components()[2]
+
+    vH_h = vH.components()[1]
+    vH_v = vH.components()[2]
+
+    H_h = H.components()[1]
+    H_v = H.components()[2]
+
+    plot_crystal_sketch_components(v0_h,v0_v,vH_h ,vH_v ,H_h ,H_v)
+
+def plot_crystal_sketch_components(v0_h,v0_v,vH_h ,vH_v ,H_h ,H_v):
+
+    import matplotlib.pyplot as plt
+    from matplotlib.path import Path
+    import matplotlib.patches as patches
+
+    hshift = 0.2
+    vshift = 0.0
+
+    plt.figure(1, figsize=(6,6))
+    ax = plt.subplot(111)
+    ax.xaxis.set_ticks_position('none')
+    ax.yaxis.set_ticks_position('none')
+    ax.xaxis.set_ticklabels([])
+    ax.yaxis.set_ticklabels([])
+
+
+    # draw axes
+
+    plt.xlim([-2.2,2.2])
+    plt.ylim([-2.2,2.2])
+
+    ax.annotate("",
+                xy    =(0.0,0.0), xycoords='data',
+                xytext=(2.0,0.0), textcoords='data',
+                arrowprops=dict(arrowstyle="<-",connectionstyle="arc3"),)
+    plt.text(2, 0,"$x_2$", color='k')
+
+    ax.annotate("",
+                xy    =(0.0,0.0), xycoords='data',
+                xytext=(0.0,2.0), textcoords='data',
+                arrowprops=dict(arrowstyle="<-",connectionstyle="arc3"),)
+    plt.text(0, 2,"$x_3$", color='k')
+
+
+    # draw vectors
+
+    ax.annotate("",
+                xy    =(-v0_h,-v0_v), xycoords='data',
+                xytext=(0.0,0.0), textcoords='data',
+                arrowprops=dict(arrowstyle="<-",connectionstyle="arc3",color='red'),)
+    plt.text(-v0_h+hshift,-v0_v+vshift, r"$\vec k_0$", color='r')
+
+
+    ax.annotate("",
+                xy    =(0,0), xycoords='data',
+                xytext=(vH_h,vH_v), textcoords='data',
+                arrowprops=dict(arrowstyle="<-",connectionstyle="arc3",color='red'),)
+    plt.text(vH_h+hshift,vH_v+vshift, r"$\vec k_H$", color='r')
+
+
+    ax.annotate("",
+                xy    =(0,0), xycoords='data',
+                xytext=(H_h,H_v), textcoords='data',
+                arrowprops=dict(arrowstyle="<-",connectionstyle="arc3",color='blue'),)
+    plt.text(H_h+hshift,H_v+vshift, r"$\vec H$", color='b')
+
+
+    # draw Bragg plane
+
+    ax.annotate("",
+                xy    =(0,0), xycoords='data',
+                xytext=( -H_v*1.5, H_h*1.5), textcoords='data',
+                arrowprops=dict(arrowstyle="-",connectionstyle="arc3",color='green'),)
+
+    ax.annotate("",
+                xy    =(0,0), xycoords='data',
+                xytext=(H_v*1.5,-H_h*1.5), textcoords='data',
+                arrowprops=dict(arrowstyle="-",connectionstyle="arc3",color='green'),)
+
+    # draw crystal
+    #
+    x1 = -0.8
+    y1 = -0.1
+    x2 =  0.8
+    y2 =  0.0
+
+    verts = [
+        (x1,y1), # left, bottom
+        (x2,y1), # left, top
+        (x2,y2), # right, top
+        (x1,y2), # right, bottom
+        (x1,y1), # ignored
+        ]
+
+
+    codes = [Path.MOVETO,
+             Path.LINETO,
+             Path.LINETO,
+             Path.LINETO,
+             Path.CLOSEPOLY,
+             ]
+
+    path = Path(verts, codes)
+    patch = patches.PathPatch(path, facecolor='orange', lw=2)
+    ax.add_patch(patch)
+
+    plt.show()
+
+
+
+# if __name__ == "__main__":
+#
+#     # All vectors are normalized
+#
+#     v0_h =   0.92515270745695932
+#     v0_v =  -0.37959513680375029
+#     vH_h =   0.99394445110430663
+#     vH_v =   0.10988370269953050
+#     H_h =   0.13917309988899462
+#     H_v =   0.99026806889209951
+#
+#     plot_crystal_sketch(v0_h,v0_v,vH_h ,vH_v ,H_h ,H_v)
+
+
+
 
 #
 def calculate_with_crystalpy(bragg_or_laue=0,  #
@@ -92,15 +221,31 @@ def calculate_with_crystalpy(bragg_or_laue=0,  #
     intensityS = numpy.zeros(angle_deviation_points)
     intensityP = numpy.zeros(angle_deviation_points)
 
+    k_0_unitary = diffraction_setup.incomingPhotonDirection(energy, 0.0)
+    # photon_0 = Photon(energy_in_ev=energy,direction_vector=k_0_unitary)
+    # k_H_unitary = diffraction_setup._
+    # print(">>>>>>>>>>>>>>>>>>>>>>>>k_0: ",k_0_unitary._components )
+
+    # plot_crystal_sketch(k_0_unitary,k_0_unitary,)
+
     for ia in range(angle_deviation_points):
         deviation = angle_deviation_min + ia * angle_step
-        angle = deviation  + bragg_angle + asymmetry_angle
 
-        # calculate the components of the unitary vector of the incident photon scan
-        # Note that diffraction plane is YZ
-        yy = numpy.cos(angle)
-        zz = - numpy.abs(numpy.sin(angle))
-        photon = Photon(energy_in_ev=energy,direction_vector=Vector(0.0,yy,zz))
+
+        # angle = deviation  + bragg_angle + asymmetry_angle
+        # # calculate the components of the unitary vector of the incident photon scan
+        # # Note that diffraction plane is YZ
+        # yy = numpy.cos(angle)
+        # zz = - numpy.abs(numpy.sin(angle))
+        # photon = Photon(energy_in_ev=energy,direction_vector=Vector(0.0,yy,zz))
+
+        k_unitary = diffraction_setup.incomingPhotonDirection(energy, deviation)
+
+        # or equivalently
+        # k_0_unitary = diffraction_setup.incomingPhotonDirection(energy, 0.0)
+        # k_unitary = k_0_unitary.rotateAroundAxis( Vector(1.0,0.0,0.0), -deviation)
+
+        photon = Photon(energy_in_ev=energy,direction_vector=k_unitary)
 
         # perform the calculation
         coeffs = diffraction.calculateDiffractedComplexAmplitudes(diffraction_setup,photon)
@@ -110,17 +255,18 @@ def calculate_with_crystalpy(bragg_or_laue=0,  #
         intensityS[ia] = coeffs['S'].intensity()
         intensityP[ia] = coeffs['P'].intensity()
 
+    # print(">>>>>>>>>>>>>>>>>>>>>>>>k_0: ",k_0_unitary._components,k_0_unitary.getNormalizedVector()._components )
     return deviations,intensityS,intensityP
 
-def plot_results(deviations,intensityS,intensityP,show=True,title='crystalpy'):
-    # plot results
-    plt.plot(1e6*deviations,intensityS)
-    plt.plot(1e6*deviations,intensityP)
-    plt.xlabel("deviation angle [urad]")
-    plt.ylabel("Reflectivity")
-    plt.legend(["Sigma-polarization","Pi-polarization"])
-    plt.title(title)
-    if show: plt.show()
+# def plot_results(deviations,intensityS,intensityP,show=True,title='crystalpy'):
+#     # plot results
+#     plt.plot(1e6*deviations,intensityS)
+#     plt.plot(1e6*deviations,intensityP)
+#     plt.xlabel("deviation angle [urad]")
+#     plt.ylabel("Reflectivity")
+#     plt.legend(["Sigma-polarization","Pi-polarization"])
+#     plt.title(title)
+#     if show: plt.show()
 
 def calculate_with_xoppy(bragg_or_laue=0,  #
                             diffracted_or_transmitted=0, #
@@ -292,73 +438,113 @@ def calculate_with_xoppy(bragg_or_laue=0,  #
     return deviations,intensityS,intensityP
 
 
+def input_cases(case):
+    input_dict = {}
+    if case == "bragg_symmetric":
+
+        # # Bragg symmetric
+        input_dict["bragg_or_laue"]             = 0
+        input_dict["diffracted_or_transmitted"] = 0
+        input_dict["crystal_name"]              = "Si"    # string
+        input_dict["thickness"]                 = 1e-2    # meters
+        input_dict["miller_h"]                  = 1       # int
+        input_dict["miller_k"]                  = 1       # int
+        input_dict["miller_l"]                  = 1       # int
+        input_dict["asymmetry_angle"]           = 0*numpy.pi/180  # radians
+        input_dict["energy"]                    = 8000.0             # eV
+        input_dict["angle_deviation_min"]       = -100e-6            # radians
+        input_dict["angle_deviation_max"]       = 300e-6             # radians
+        input_dict["angle_deviation_points"]    = 500
+    elif case == "laue_symmetric":
+        # Laue symmetric
+        input_dict["bragg_or_laue"]             = 1
+        input_dict["diffracted_or_transmitted"] = 0
+        input_dict["crystal_name"]              = "Si"    # string
+        input_dict["thickness"]                 = 10e-6   # meters
+        input_dict["miller_h"]                  = 1       # int
+        input_dict["miller_k"]                  = 1       # int
+        input_dict["miller_l"]                  = 1       # int
+        input_dict["asymmetry_angle"]           = 90.0 * numpy.pi/180  # radians
+        input_dict["energy"]                    = 8000.0             # eV
+        input_dict["angle_deviation_min"]       = -100e-6            # radians
+        input_dict["angle_deviation_max"]       = 300e-6             # radians
+        input_dict["angle_deviation_points"]    = 500
+
+    if case == "bragg_asymmetric":
+
+        # # Bragg symmetric
+        input_dict["bragg_or_laue"]             = 0
+        input_dict["diffracted_or_transmitted"] = 0
+        input_dict["crystal_name"]              = "Si"    # string
+        input_dict["thickness"]                 = 1e-2    # meters
+        input_dict["miller_h"]                  = 1       # int
+        input_dict["miller_k"]                  = 1       # int
+        input_dict["miller_l"]                  = 1       # int
+        input_dict["asymmetry_angle"]           = 10*numpy.pi/180  # radians
+        input_dict["energy"]                    = 8000.0             # eV
+        input_dict["angle_deviation_min"]       = -100e-6            # radians
+        input_dict["angle_deviation_max"]       = 300e-6             # radians
+        input_dict["angle_deviation_points"]    = 500
+    elif case == "laue_asymmetric":
+        # Laue symmetric
+        input_dict["bragg_or_laue"]             = 1
+        input_dict["diffracted_or_transmitted"] = 0
+        input_dict["crystal_name"]              = "Si"    # string
+        input_dict["thickness"]                 = 10e-6   # meters
+        input_dict["miller_h"]                  = 1       # int
+        input_dict["miller_k"]                  = 1       # int
+        input_dict["miller_l"]                  = 1       # int
+        input_dict["asymmetry_angle"]           = 80.0 * numpy.pi/180  # radians
+        input_dict["energy"]                    = 8000.0             # eV
+        input_dict["angle_deviation_min"]       = -100e-6            # radians
+        input_dict["angle_deviation_max"]       = 300e-6             # radians
+        input_dict["angle_deviation_points"]    = 500
+
+    return input_dict
 #
 # main
 #
 if __name__ == "__main__":
 
-    input_dict = {}
-
-    # Bragg symmetric
-    input_dict["bragg_or_laue"]             = 0
-    input_dict["diffracted_or_transmitted"] = 0
-    input_dict["crystal_name"]              = "Si"    # string
-    input_dict["thickness"]                 = 1e-2    # meters
-    input_dict["miller_h"]                  = 1       # int
-    input_dict["miller_k"]                  = 1       # int
-    input_dict["miller_l"]                  = 1       # int
-    input_dict["asymmetry_angle"]           = 0*numpy.pi/180  # radians
-    input_dict["energy"]                    = 8000.0             # eV
-    input_dict["angle_deviation_min"]       = -100e-6            # radians
-    input_dict["angle_deviation_max"]       = 300e-6             # radians
-    input_dict["angle_deviation_points"]    = 500
-
-    # # Laue symmetric
-    # input_dict["bragg_or_laue"]             = 1
-    # input_dict["diffracted_or_transmitted"] = 0
-    # input_dict["crystal_name"]              = "Si"    # string
-    # input_dict["thickness"]                 = 10e-6   # meters
-    # input_dict["miller_h"]                  = 1       # int
-    # input_dict["miller_k"]                  = 1       # int
-    # input_dict["miller_l"]                  = 1       # int
-    # input_dict["asymmetry_angle"]           = numpy.pi/2  # radians
-    # input_dict["energy"]                    = 8000.0             # eV
-    # input_dict["angle_deviation_min"]       = -100e-6            # radians
-    # input_dict["angle_deviation_max"]       = 300e-6             # radians
-    # input_dict["angle_deviation_points"]    = 500
-
-
-
-
-    angle1,intS1, intP1 = calculate_with_crystalpy(
-                            bragg_or_laue             =  input_dict["bragg_or_laue"],
-                            diffracted_or_transmitted =  input_dict["diffracted_or_transmitted"],
-                            crystal_name              =  input_dict["crystal_name"],
-                            thickness                 =  input_dict["thickness"],
-                            miller_h                  =  input_dict["miller_h"],
-                            miller_k                  =  input_dict["miller_k"],
-                            miller_l                  =  input_dict["miller_l"],
-                            asymmetry_angle           =  input_dict["asymmetry_angle"],
-                            energy                    =  input_dict["energy"],
-                            angle_deviation_min       =  input_dict["angle_deviation_min"],
-                            angle_deviation_max       =  input_dict["angle_deviation_max"],
-                            angle_deviation_points    =  input_dict["angle_deviation_points"],)
-
-    angle2,intS2, intP2 = calculate_with_xoppy(
-                            bragg_or_laue             =  input_dict["bragg_or_laue"],
-                            diffracted_or_transmitted =  input_dict["diffracted_or_transmitted"],
-                            crystal_name              =  input_dict["crystal_name"],
-                            thickness                 =  input_dict["thickness"],
-                            miller_h                  =  input_dict["miller_h"],
-                            miller_k                  =  input_dict["miller_k"],
-                            miller_l                  =  input_dict["miller_l"],
-                            asymmetry_angle           =  input_dict["asymmetry_angle"],
-                            energy                    =  input_dict["energy"],
-                            angle_deviation_min       =  input_dict["angle_deviation_min"],
-                            angle_deviation_max       =  input_dict["angle_deviation_max"],
-                            angle_deviation_points    =  input_dict["angle_deviation_points"],)
-
-    # plot_results(angle,intS, intP)
-
     from srxraylib.plot.gol import plot
-    plot(angle1,intS1,angle2,intS2,legend=['S-pol crystalpy','S-pol xoppy'])
+
+    for case in ["bragg_symmetric","laue_symmetric","bragg_asymmetric","laue_asymmetric"]:
+        input_dict = input_cases(case)
+
+
+
+
+        angle1,intS1, intP1 = calculate_with_crystalpy(
+                                bragg_or_laue             =  input_dict["bragg_or_laue"],
+                                diffracted_or_transmitted =  input_dict["diffracted_or_transmitted"],
+                                crystal_name              =  input_dict["crystal_name"],
+                                thickness                 =  input_dict["thickness"],
+                                miller_h                  =  input_dict["miller_h"],
+                                miller_k                  =  input_dict["miller_k"],
+                                miller_l                  =  input_dict["miller_l"],
+                                asymmetry_angle           =  input_dict["asymmetry_angle"],
+                                energy                    =  input_dict["energy"],
+                                angle_deviation_min       =  input_dict["angle_deviation_min"],
+                                angle_deviation_max       =  input_dict["angle_deviation_max"],
+                                angle_deviation_points    =  input_dict["angle_deviation_points"],)
+
+        # plot(angle1,intS1,legend=['S-pol crystalpy'])
+
+        angle2,intS2, intP2 = calculate_with_xoppy(
+                                bragg_or_laue             =  input_dict["bragg_or_laue"],
+                                diffracted_or_transmitted =  input_dict["diffracted_or_transmitted"],
+                                crystal_name              =  input_dict["crystal_name"],
+                                thickness                 =  input_dict["thickness"],
+                                miller_h                  =  input_dict["miller_h"],
+                                miller_k                  =  input_dict["miller_k"],
+                                miller_l                  =  input_dict["miller_l"],
+                                asymmetry_angle           =  input_dict["asymmetry_angle"],
+                                energy                    =  input_dict["energy"],
+                                angle_deviation_min       =  input_dict["angle_deviation_min"],
+                                angle_deviation_max       =  input_dict["angle_deviation_max"],
+                                angle_deviation_points    =  input_dict["angle_deviation_points"],)
+
+
+
+        plot(angle1,intS1,angle2,intS2,legend=['S-pol crystalpy','S-pol xoppy'],title=case)
+
